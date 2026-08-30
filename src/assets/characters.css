@@ -1,0 +1,35 @@
+.sprite-human-male,
+.clip-human-walk {
+  --frame-ratio: 343 / 558;
+  --sprite-image: url("./sprites/human-male.png");
+}
+
+.sprite-dog,
+.clip-dog-walk {
+  --frame-ratio: 271 / 232;
+  --sprite-image: url("./sprites/dog.png");
+}
+
+.sprite-cat,
+.clip-cat-walk {
+  --frame-ratio: 260 / 209;
+  --sprite-image: url("./sprites/cat.png");
+}
+
+.sprite-viking,
+.clip-viking-walk {
+  --frame-ratio: 267 / 343;
+  --sprite-image: url("./sprites/viking-walk.png");
+}
+
+.clip-viking-hammer {
+  --frame-ratio: 190 / 219;
+  --sprite-image: url("./sprites/viking-hammer.png");
+  width: calc(var(--citizen-size) * 1.7);
+}
+
+.clip-viking-think {
+  --frame-ratio: 294 / 413;
+  --sprite-image: url("./sprites/viking-think.png");
+  width: calc(var(--citizen-size) * 1.2);
+}

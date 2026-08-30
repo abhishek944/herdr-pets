@@ -1,0 +1,27 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  macos:
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [aarch64-apple-darwin, x86_64-apple-darwin]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Rust 1.88
+        run: rustup toolchain install 1.88.0 --profile minimal --target ${{ matrix.target }}
+      - run: npm ci
+      - run: npm run build
+      - name: Build locked Tauri target at the declared MSRV
+        run: cargo +1.88.0 build --locked --manifest-path src-tauri/Cargo.toml --release --target ${{ matrix.target }}
+      - name: Verify architecture
+        run: file src-tauri/target/${{ matrix.target }}/release/herdr-pets

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Herdr Pets icon">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6ee7c2"/>
+      <stop offset="1" stop-color="#3687df"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#sky)"/>
+  <path d="M52 390c61-78 135-117 204-117s143 39 204 117v70H52z" fill="#2c9b62"/>
+  <g fill="#fff" stroke="#263951" stroke-width="14" stroke-linejoin="round">
+    <path d="M99 291v-67l45-45 45 45v67z"/>
+    <path d="M211 291v-86l45-45 45 45v86z"/>
+    <path d="M323 291v-67l45-45 45 45v67z"/>
+  </g>
+  <g fill="#263951">
+    <circle cx="128" cy="246" r="9"/><circle cx="160" cy="246" r="9"/>
+    <circle cx="240" cy="246" r="9"/><circle cx="272" cy="246" r="9"/>
+    <circle cx="352" cy="246" r="9"/><circle cx="384" cy="246" r="9"/>
+  </g>
+  <g fill="none" stroke="#263951" stroke-width="10" stroke-linecap="round">
+    <path d="M134 265q10 12 20 0"/><path d="M246 265q10 12 20 0"/><path d="M358 265q10 12 20 0"/>
+  </g>
+</svg>

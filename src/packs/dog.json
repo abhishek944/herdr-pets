@@ -1,0 +1,82 @@
+{
+  "formatVersion": 1,
+  "id": "dog",
+  "packVersion": "2",
+  "clips": {
+    "walk": {
+      "asset": "sprites/dog.png",
+      "durationMs": 720,
+      "role": "locomotion",
+      "cssClass": "clip-dog-walk",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "rest": {
+      "asset": "sprites/dog.png",
+      "durationMs": 900,
+      "role": "stationary",
+      "cssClass": "clip-dog-walk",
+      "sourceFacing": "right",
+      "mirror": true
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "move",
+        "clip": "walk",
+        "durationMs": 1800,
+        "speedPxPerSecond": 22
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "move",
+        "clip": "walk",
+        "durationMs": 4200,
+        "speedPxPerSecond": 34
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "rest"
+          },
+          {
+            "type": "wait",
+            "durationMs": 700
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "rest"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "rest"
+          },
+          {
+            "type": "wait",
+            "durationMs": 1100
+          }
+        ]
+      }
+    }
+  }
+}

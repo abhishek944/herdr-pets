@@ -1,0 +1,27 @@
+id = "herdr-pets"
+name = "Herdr Pets"
+version = "0.1.0"
+min_herdr_version = "0.8.0"
+description = "A transparent desktop village for live Herdr agents"
+platforms = ["macos"]
+
+[[startup]]
+command = ["sh", "scripts/supervisor.sh", "on"]
+
+[[actions]]
+id = "village-on"
+title = "Show the Herdr pet village"
+contexts = ["workspace"]
+command = ["sh", "scripts/supervisor.sh", "on"]
+
+[[actions]]
+id = "village-off"
+title = "Hide the Herdr pet village"
+contexts = ["workspace"]
+command = ["sh", "scripts/supervisor.sh", "off"]
+
+[[actions]]
+id = "village-status"
+title = "Show Herdr pet village status"
+contexts = ["workspace"]
+command = ["sh", "scripts/supervisor.sh", "status"]

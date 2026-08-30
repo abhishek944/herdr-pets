@@ -1,5 +1,19 @@
+# Local workflow evidence
 var/
+
+# Web dependencies and output
 node_modules/
 dist/
+*.log
+*.local
+
+# Rust/Tauri output
+src-tauri/target/
 target/
+
+# Editors and operating systems
+.vscode/*
+!.vscode/extensions.json
+.idea/
 .DS_Store
+*.sw?

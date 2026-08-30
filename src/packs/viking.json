@@ -1,0 +1,100 @@
+{
+  "formatVersion": 1,
+  "id": "viking",
+  "packVersion": "1",
+  "clips": {
+    "walk": {
+      "asset": "sprites/viking-walk.png",
+      "durationMs": 630,
+      "role": "locomotion",
+      "cssClass": "clip-viking-walk",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "hammer": {
+      "asset": "sprites/viking-hammer.png",
+      "durationMs": 1080,
+      "role": "stationary",
+      "cssClass": "clip-viking-hammer",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "think": {
+      "asset": "sprites/viking-think.png",
+      "durationMs": 1800,
+      "role": "stationary",
+      "cssClass": "clip-viking-think",
+      "sourceFacing": "right",
+      "mirror": true
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "move",
+        "clip": "walk",
+        "durationMs": 1800,
+        "speedPxPerSecond": 18
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "walk",
+            "durationMs": 2200,
+            "speedPxPerSecond": 27
+          },
+          {
+            "type": "play",
+            "clip": "hammer",
+            "count": 4
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "think"
+          },
+          {
+            "type": "wait",
+            "durationMs": 300
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "hammer"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "think"
+          },
+          {
+            "type": "wait",
+            "durationMs": 900
+          }
+        ]
+      }
+    }
+  }
+}

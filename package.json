@@ -1,0 +1,22 @@
+{
+  "name": "herdr-pets",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A transparent desktop village for live Herdr agents",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "check": "npm run check:flow && npm run build && cargo check --manifest-path src-tauri/Cargo.toml",
+    "check:flow": "sh scripts/check-flow-runtime.sh",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.3"
+  }
+}
