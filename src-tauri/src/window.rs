@@ -104,6 +104,7 @@ pub(crate) fn create_village_window(
         .always_on_top(true)
         .focusable(false)
         .focused(false)
+        .accept_first_mouse(true)
         .skip_taskbar(true)
         .shadow(false)
         .visible(false)

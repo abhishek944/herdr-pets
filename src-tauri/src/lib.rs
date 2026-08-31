@@ -2,6 +2,8 @@ mod agents;
 mod focus;
 mod herdr_command;
 mod labels;
+#[cfg(target_os = "macos")]
+mod macos_activation;
 mod sessions;
 mod window;
 

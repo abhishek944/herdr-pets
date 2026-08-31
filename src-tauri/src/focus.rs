@@ -67,7 +67,7 @@ struct CurrentAgentSession {
     value: String,
 }
 
-fn run_focus_target(herdr: &OsString, target: FocusTarget) -> Result<(), String> {
+fn run_focus_target(herdr: &OsString, target: &FocusTarget) -> Result<(), String> {
     if let Some(expected) = target.agent_session_id.as_deref() {
         let arguments = vec![
             "agent".to_string(),
@@ -84,7 +84,11 @@ fn run_focus_target(herdr: &OsString, target: FocusTarget) -> Result<(), String>
             return Err("agent changed since the latest poll".to_string());
         }
     }
-    let arguments = vec!["agent".to_string(), "focus".to_string(), target.pane_id];
+    let arguments = vec![
+        "agent".to_string(),
+        "focus".to_string(),
+        target.pane_id.clone(),
+    ];
     run_herdr_command(herdr, target.socket.as_deref(), &arguments)
         .map(|_| ())
         .ok_or_else(|| "Herdr could not focus that agent".to_string())
@@ -99,9 +103,14 @@ pub(crate) async fn focus_agent(
         .get(&id)
         .ok_or_else(|| "agent is no longer available".to_string())?;
     let herdr = herdr_binary();
-    tauri::async_runtime::spawn_blocking(move || run_focus_target(&herdr, target))
-        .await
-        .map_err(|_| "agent focus task failed".to_string())?
+    tauri::async_runtime::spawn_blocking(move || {
+        run_focus_target(&herdr, &target)?;
+        #[cfg(target_os = "macos")]
+        crate::macos_activation::activate_herdr_host(&herdr, target.socket.as_deref())?;
+        Ok(())
+    })
+    .await
+    .map_err(|_| "agent focus task failed".to_string())?
 }
 
 #[cfg(test)]
@@ -153,7 +162,7 @@ mod tests {
         let executable = executable.into_os_string();
         assert!(run_focus_target(
             &executable,
-            FocusTarget {
+            &FocusTarget {
                 pane_id: "w9:p4".to_string(),
                 socket: Some("/tmp/right-session.sock".to_string()),
                 agent_session_id: Some("replaced-session".to_string()),
@@ -162,7 +171,7 @@ mod tests {
         .is_err());
         run_focus_target(
             &executable,
-            FocusTarget {
+            &FocusTarget {
                 pane_id: "w9:p4".to_string(),
                 socket: Some("/tmp/right-session.sock".to_string()),
                 agent_session_id: Some("session-one".to_string()),
