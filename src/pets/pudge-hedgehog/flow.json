@@ -1,0 +1,98 @@
+{
+  "formatVersion": 1,
+  "id": "pudge-hedgehog",
+  "packVersion": "1",
+  "clips": {
+    "quick-trot": {
+      "asset": "walk.png",
+      "durationMs": 680,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "leaf-gather": {
+      "asset": "work.png",
+      "durationMs": 800,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "quick-trot",
+            "durationMs": 1360,
+            "speedPxPerSecond": 40
+          },
+          {
+            "type": "move",
+            "clip": "leaf-gather",
+            "durationMs": 800,
+            "speedPxPerSecond": 16
+          },
+          {
+            "type": "move",
+            "clip": "quick-trot",
+            "durationMs": 680,
+            "speedPxPerSecond": 56
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "leaf-gather"
+          },
+          {
+            "type": "wait",
+            "durationMs": 340
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "leaf-gather"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "quick-trot",
+            "durationMs": 680,
+            "speedPxPerSecond": 20
+          },
+          {
+            "type": "play",
+            "clip": "leaf-gather"
+          }
+        ]
+      }
+    }
+  }
+}

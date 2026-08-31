@@ -1,0 +1,98 @@
+{
+  "formatVersion": 1,
+  "id": "gus-mail-carrier",
+  "packVersion": "1",
+  "clips": {
+    "quick-stride": {
+      "asset": "walk.png",
+      "durationMs": 800,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "letter-sort": {
+      "asset": "work.png",
+      "durationMs": 880,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "quick-stride",
+            "durationMs": 1600,
+            "speedPxPerSecond": 34
+          },
+          {
+            "type": "move",
+            "clip": "letter-sort",
+            "durationMs": 880,
+            "speedPxPerSecond": 12
+          },
+          {
+            "type": "move",
+            "clip": "quick-stride",
+            "durationMs": 800,
+            "speedPxPerSecond": 47
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "letter-sort"
+          },
+          {
+            "type": "wait",
+            "durationMs": 400
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "letter-sort"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "quick-stride",
+            "durationMs": 800,
+            "speedPxPerSecond": 17
+          },
+          {
+            "type": "play",
+            "clip": "letter-sort"
+          }
+        ]
+      }
+    }
+  }
+}

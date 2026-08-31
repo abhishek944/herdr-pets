@@ -1,0 +1,98 @@
+{
+  "formatVersion": 1,
+  "id": "nib-dragon-hatchling",
+  "packVersion": "1",
+  "clips": {
+    "toddle-hop": {
+      "asset": "walk.png",
+      "durationMs": 760,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "flame-puff": {
+      "asset": "work.png",
+      "durationMs": 760,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "toddle-hop",
+            "durationMs": 1520,
+            "speedPxPerSecond": 30
+          },
+          {
+            "type": "move",
+            "clip": "flame-puff",
+            "durationMs": 760,
+            "speedPxPerSecond": 11
+          },
+          {
+            "type": "move",
+            "clip": "toddle-hop",
+            "durationMs": 760,
+            "speedPxPerSecond": 42
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "flame-puff"
+          },
+          {
+            "type": "wait",
+            "durationMs": 380
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "flame-puff"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "toddle-hop",
+            "durationMs": 760,
+            "speedPxPerSecond": 15
+          },
+          {
+            "type": "play",
+            "clip": "flame-puff"
+          }
+        ]
+      }
+    }
+  }
+}

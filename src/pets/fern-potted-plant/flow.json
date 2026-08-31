@@ -1,0 +1,98 @@
+{
+  "formatVersion": 1,
+  "id": "fern-potted-plant",
+  "packVersion": "1",
+  "clips": {
+    "leaf-sway-step": {
+      "asset": "walk.png",
+      "durationMs": 720,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "sprout-leaf": {
+      "asset": "work.png",
+      "durationMs": 960,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "leaf-sway-step",
+            "durationMs": 1440,
+            "speedPxPerSecond": 19
+          },
+          {
+            "type": "move",
+            "clip": "sprout-leaf",
+            "durationMs": 960,
+            "speedPxPerSecond": 7
+          },
+          {
+            "type": "move",
+            "clip": "leaf-sway-step",
+            "durationMs": 720,
+            "speedPxPerSecond": 26
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "sprout-leaf"
+          },
+          {
+            "type": "wait",
+            "durationMs": 360
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "sprout-leaf"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "leaf-sway-step",
+            "durationMs": 720,
+            "speedPxPerSecond": 9
+          },
+          {
+            "type": "play",
+            "clip": "sprout-leaf"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "formatVersion": 1,
+  "id": "bigfoot-yeti",
+  "packVersion": "1",
+  "clips": {
+    "lumbering-lope": {
+      "asset": "walk.png",
+      "durationMs": 920,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "snow-toss": {
+      "asset": "work.png",
+      "durationMs": 920,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "lumbering-lope",
+            "durationMs": 1840,
+            "speedPxPerSecond": 21
+          },
+          {
+            "type": "move",
+            "clip": "snow-toss",
+            "durationMs": 920,
+            "speedPxPerSecond": 9
+          },
+          {
+            "type": "move",
+            "clip": "lumbering-lope",
+            "durationMs": 920,
+            "speedPxPerSecond": 29
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "snow-toss"
+          },
+          {
+            "type": "wait",
+            "durationMs": 460
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "snow-toss"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "lumbering-lope",
+            "durationMs": 920,
+            "speedPxPerSecond": 10
+          },
+          {
+            "type": "play",
+            "clip": "snow-toss"
+          }
+        ]
+      }
+    }
+  }
+}

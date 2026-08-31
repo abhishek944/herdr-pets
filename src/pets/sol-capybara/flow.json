@@ -1,0 +1,98 @@
+{
+  "formatVersion": 1,
+  "id": "sol-capybara",
+  "packVersion": "1",
+  "clips": {
+    "slow-stroll": {
+      "asset": "walk.png",
+      "durationMs": 880,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "steam-soak": {
+      "asset": "work.png",
+      "durationMs": 1000,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "slow-stroll",
+            "durationMs": 1760,
+            "speedPxPerSecond": 15
+          },
+          {
+            "type": "move",
+            "clip": "steam-soak",
+            "durationMs": 1000,
+            "speedPxPerSecond": 8
+          },
+          {
+            "type": "move",
+            "clip": "slow-stroll",
+            "durationMs": 880,
+            "speedPxPerSecond": 21
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "steam-soak"
+          },
+          {
+            "type": "wait",
+            "durationMs": 440
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "steam-soak"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "slow-stroll",
+            "durationMs": 880,
+            "speedPxPerSecond": 8
+          },
+          {
+            "type": "play",
+            "clip": "steam-soak"
+          }
+        ]
+      }
+    }
+  }
+}

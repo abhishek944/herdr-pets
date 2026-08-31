@@ -1,0 +1,98 @@
+{
+  "formatVersion": 1,
+  "id": "kip-penguin-postman",
+  "packVersion": "1",
+  "clips": {
+    "waddle": {
+      "asset": "walk.png",
+      "durationMs": 720,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "parcel-toss": {
+      "asset": "work.png",
+      "durationMs": 800,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "waddle",
+            "durationMs": 1440,
+            "speedPxPerSecond": 26
+          },
+          {
+            "type": "move",
+            "clip": "parcel-toss",
+            "durationMs": 800,
+            "speedPxPerSecond": 14
+          },
+          {
+            "type": "move",
+            "clip": "waddle",
+            "durationMs": 720,
+            "speedPxPerSecond": 36
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "parcel-toss"
+          },
+          {
+            "type": "wait",
+            "durationMs": 360
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "parcel-toss"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "waddle",
+            "durationMs": 720,
+            "speedPxPerSecond": 13
+          },
+          {
+            "type": "play",
+            "clip": "parcel-toss"
+          }
+        ]
+      }
+    }
+  }
+}
