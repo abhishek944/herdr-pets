@@ -7,6 +7,35 @@ This is a **Tauri v2 application**, built from scratch with a Rust backend and a
 TypeScript/CSS web interface. It uses one lightweight window for the whole
 village—never one window per agent and never an arbitrary agent limit.
 
+## Install
+
+Herdr Pets is a Herdr plugin. Install it from GitHub:
+
+```bash
+herdr plugin install abhishek944/herdr-pets
+```
+
+Herdr clones the repository, shows the manifest and the commands it will run for
+review, then registers it. It is also listed in the [Herdr marketplace](https://herdr.dev/plugins/) — search for **herdr-pets**, or open its card from
+any marketplace listing page.
+
+The village starts automatically on the next Herdr startup (or live handoff)
+because the plugin declares a startup hook. Prebuilt macOS arm64 and x64
+binaries are bundled in the repository, so **no Node.js or Rust toolchain is
+required to install** — you only need macOS and Herdr 0.8 or newer.
+
+Control it with the plugin actions once it is running:
+
+```bash
+herdr plugin action invoke herdr-pets.village-on
+herdr plugin action invoke herdr-pets.village-off
+herdr plugin action invoke herdr-pets.village-status
+```
+
+Marketplace listings are discovered automatically from the public
+`herdr-plugin` topic and are **not reviewed**. Herdr runs plugin code with your
+user permissions, so review the manifest and source before installing.
+
 ## What it does
 
 - Polls every registered Herdr session once per second through safe Rust commands (no shell), with a two-second timeout and a 1 MiB output limit.
@@ -48,10 +77,17 @@ unavailable, the village quietly empties and retries.
 
 ## Requirements
 
-- macOS (v0.1 target)
+**To install and run:**
+
+- macOS (arm64 or x86_64)
 - Herdr 0.8 or newer
-Prebuilt macOS arm64 and x64 renderers are included for normal plugin installs.
-Building from source additionally requires:
+
+The plugin registers with `platforms = ["macos"]`, so Herdr refuses to install it
+on Linux or Windows. On a supported Mac, nothing else is needed — the prebuilt
+binaries are bundled with the repository.
+
+**To build from source instead** (for example, during development or to apply a
+change to the bundled renderer), additionally need:
 
 - Node.js 20 or newer
 - Rust 1.88 or newer
@@ -77,22 +113,18 @@ npm install
 npm run tauri dev
 ```
 
-## Link to Herdr
+## Link for local development
+
+While working on this repository, link the working tree instead of installing
+from GitHub:
 
 ```bash
 herdr plugin link "$PWD"
 ```
 
-The startup hook runs when the Herdr server starts or hands off. You can also
-control it directly:
-
-```bash
-herdr plugin action invoke herdr-pets.village-on
-herdr plugin action invoke herdr-pets.village-off
-herdr plugin action invoke herdr-pets.village-status
-```
-
-Herdr stores the renderer PID, exact executable path, process start time, and
+Linking does not run build commands and does not register against GitHub. The
+startup hook runs when the Herdr server starts or hands off. Herdr stores the
+renderer PID, exact executable path, process start time, and
 session registry in its plugin state directory. The supervisor verifies all
 process identity fields immediately before signaling and uses macOS `lockf` for
 race-free control operations. Renderer output is discarded so it cannot grow an
