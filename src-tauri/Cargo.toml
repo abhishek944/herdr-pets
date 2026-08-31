@@ -1,6 +1,6 @@
 [package]
 name = "herdr-pets"
-version = "0.1.0"
+version = "0.1.1"
 description = "A transparent desktop village for live Herdr agents"
 authors = ["herdr-pets contributors"]
 edition = "2021"
