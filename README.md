@@ -3,6 +3,10 @@
 Herdr Pets turns every live Herdr agent into a small animated citizen in a
 transparent village along the bottom of your desktop.
 
+<video src="assets/pets-demo.mp4" autoplay loop muted playsinline controls width="100%" poster="assets/icon.svg">
+  Your browser does not support the video tag — <a href="assets/pets-demo.mp4">download the demo (13s)</a>.
+</video>
+
 This is a **Tauri v2 application**, built from scratch with a Rust backend and a
 TypeScript/CSS web interface. It uses one lightweight window for the whole
 village—never one window per agent and never an arbitrary agent limit.
