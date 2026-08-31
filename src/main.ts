@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { installPetFocus } from "./pet-focus";
 import { VillageRenderer, type HitRegion } from "./renderer";
 import {
   reconcileCitizens,
@@ -18,6 +19,11 @@ const retirementTimers = new Map<string, number>();
 const renderer = new VillageRenderer(village, (regions: HitRegion[]) => {
   void invoke("set_hit_regions", { regions }).catch(() => {
     // The macOS hit-test bridge is optional on unsupported desktop targets.
+  });
+});
+installPetFocus(village, (id) => {
+  void invoke("focus_agent", { id }).catch(() => {
+    // The agent may have exited or moved since the latest poll.
   });
 });
 

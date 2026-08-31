@@ -1,0 +1,96 @@
+{
+  "formatVersion": 1,
+  "id": "dog",
+  "packVersion": "3",
+  "clips": {
+    "sprint": {
+      "asset": "walk.png",
+      "durationMs": 720,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "listen": {
+      "asset": "walk.png",
+      "durationMs": 720,
+      "role": "stationary",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "repeat",
+        "count": 2,
+        "flow": {
+          "type": "sequence",
+          "steps": [
+            {
+              "type": "move",
+              "clip": "sprint",
+              "durationMs": 900,
+              "speedPxPerSecond": 50
+            },
+            {
+              "type": "move",
+              "clip": "sprint",
+              "durationMs": 650,
+              "speedPxPerSecond": 42
+            }
+          ]
+        }
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "listen"
+          },
+          {
+            "type": "wait",
+            "durationMs": 500
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "listen"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "sprint",
+            "durationMs": 1000,
+            "speedPxPerSecond": 20
+          },
+          {
+            "type": "wait",
+            "durationMs": 500
+          }
+        ]
+      }
+    }
+  }
+}

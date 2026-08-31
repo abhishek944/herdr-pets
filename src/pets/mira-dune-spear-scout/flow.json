@@ -1,0 +1,106 @@
+{
+  "formatVersion": 1,
+  "id": "mira-dune-spear-scout",
+  "packVersion": "1",
+  "clips": {
+    "dune-patrol": {
+      "asset": "walk.png",
+      "durationMs": 720,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "spear-drill": {
+      "asset": "work.png",
+      "durationMs": 810,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    },
+    "map-check": {
+      "durationMs": 810,
+      "role": "locomotion",
+      "asset": "map.png",
+      "sourceFacing": "right",
+      "mirror": true,
+      "scale": 1
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "dune-patrol",
+            "durationMs": 1440,
+            "speedPxPerSecond": 14
+          },
+          {
+            "type": "move",
+            "clip": "map-check",
+            "durationMs": 810,
+            "speedPxPerSecond": 10
+          },
+          {
+            "type": "move",
+            "clip": "spear-drill",
+            "durationMs": 1620,
+            "speedPxPerSecond": 12
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "spear-drill"
+          },
+          {
+            "type": "wait",
+            "durationMs": 540
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "spear-drill"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "dune-patrol",
+            "durationMs": 1200,
+            "speedPxPerSecond": 22
+          },
+          {
+            "type": "play",
+            "clip": "spear-drill"
+          }
+        ]
+      }
+    }
+  }
+}

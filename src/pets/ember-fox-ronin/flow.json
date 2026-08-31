@@ -1,0 +1,89 @@
+{
+  "formatVersion": 1,
+  "id": "ember-fox-ronin",
+  "packVersion": "1",
+  "clips": {
+    "scout": {
+      "asset": "walk.png",
+      "durationMs": 630,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "sword-practice": {
+      "asset": "work.png",
+      "durationMs": 750,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "scout",
+            "durationMs": 1800,
+            "speedPxPerSecond": 38
+          },
+          {
+            "type": "move",
+            "clip": "sword-practice",
+            "durationMs": 1500,
+            "speedPxPerSecond": 16
+          },
+          {
+            "type": "move",
+            "clip": "scout",
+            "durationMs": 1100,
+            "speedPxPerSecond": 46
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "sword-practice"
+          },
+          {
+            "type": "wait",
+            "durationMs": 420
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "sword-practice"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "move",
+        "clip": "scout",
+        "durationMs": 2100,
+        "speedPxPerSecond": 19
+      }
+    }
+  }
+}

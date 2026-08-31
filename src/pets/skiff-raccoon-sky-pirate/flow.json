@@ -1,0 +1,88 @@
+{
+  "formatVersion": 1,
+  "id": "skiff-raccoon-sky-pirate",
+  "packVersion": "1",
+  "clips": {
+    "sneaky-march": {
+      "asset": "walk.png",
+      "durationMs": 690,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "telescope-scan": {
+      "asset": "work.png",
+      "durationMs": 960,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "repeat",
+        "count": 2,
+        "flow": {
+          "type": "sequence",
+          "steps": [
+            {
+              "type": "move",
+              "clip": "sneaky-march",
+              "durationMs": 1300,
+              "speedPxPerSecond": 42
+            },
+            {
+              "type": "move",
+              "clip": "telescope-scan",
+              "durationMs": 960,
+              "speedPxPerSecond": 14
+            }
+          ]
+        }
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "telescope-scan",
+            "count": 2
+          },
+          {
+            "type": "wait",
+            "durationMs": 300
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "telescope-scan"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "move",
+        "clip": "sneaky-march",
+        "durationMs": 1750,
+        "speedPxPerSecond": 26
+      }
+    }
+  }
+}

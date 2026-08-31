@@ -20,7 +20,17 @@ jobs:
       - name: Install Rust 1.88
         run: rustup toolchain install 1.88.0 --profile minimal --target ${{ matrix.target }}
       - run: npm ci
+      - run: npm run check:lines
+      - run: npm run check:flow
+      - run: npm run check:focus
       - run: npm run build
+      - name: Run locked Rust tests at the declared MSRV
+        run: cargo +1.88.0 test --locked --manifest-path src-tauri/Cargo.toml
+      - name: Verify packaged source fingerprints
+        run: |
+          expected=$(./scripts/package-source-fingerprint.sh)
+          test "$(cat bin/macos-arm64/herdr-pets.source.sha256)" = "$expected"
+          test "$(cat bin/macos-x64/herdr-pets.source.sha256)" = "$expected"
       - name: Build locked Tauri target at the declared MSRV
         run: cargo +1.88.0 build --locked --manifest-path src-tauri/Cargo.toml --release --target ${{ matrix.target }}
       - name: Verify architecture

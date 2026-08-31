@@ -1,0 +1,100 @@
+{
+  "formatVersion": 1,
+  "id": "pebble-slime-knight",
+  "packVersion": "1",
+  "clips": {
+    "wobbly-march": {
+      "asset": "walk.png",
+      "durationMs": 690,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "lid-block": {
+      "asset": "work.png",
+      "durationMs": 840,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "lid-block",
+            "durationMs": 840,
+            "speedPxPerSecond": 18
+          },
+          {
+            "type": "move",
+            "clip": "wobbly-march",
+            "durationMs": 1600,
+            "speedPxPerSecond": 36
+          },
+          {
+            "type": "move",
+            "clip": "lid-block",
+            "durationMs": 840,
+            "speedPxPerSecond": 18
+          },
+          {
+            "type": "move",
+            "clip": "wobbly-march",
+            "durationMs": 1000,
+            "speedPxPerSecond": 44
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "lid-block",
+            "count": 2
+          },
+          {
+            "type": "wait",
+            "durationMs": 340
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "lid-block"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "repeat",
+        "count": 2,
+        "flow": {
+          "type": "move",
+          "clip": "wobbly-march",
+          "durationMs": 850,
+          "speedPxPerSecond": 20
+        }
+      }
+    }
+  }
+}

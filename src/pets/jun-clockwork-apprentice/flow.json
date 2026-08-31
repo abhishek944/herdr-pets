@@ -1,0 +1,88 @@
+{
+  "formatVersion": 1,
+  "id": "jun-clockwork-apprentice",
+  "packVersion": "1",
+  "clips": {
+    "tool-belt-walk": {
+      "asset": "walk.png",
+      "durationMs": 750,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "bird-repair": {
+      "asset": "work.png",
+      "durationMs": 990,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "repeat",
+        "count": 3,
+        "flow": {
+          "type": "sequence",
+          "steps": [
+            {
+              "type": "move",
+              "clip": "tool-belt-walk",
+              "durationMs": 900,
+              "speedPxPerSecond": 28
+            },
+            {
+              "type": "move",
+              "clip": "bird-repair",
+              "durationMs": 990,
+              "speedPxPerSecond": 12
+            }
+          ]
+        }
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "bird-repair",
+            "count": 2
+          },
+          {
+            "type": "wait",
+            "durationMs": 260
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "bird-repair"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "move",
+        "clip": "tool-belt-walk",
+        "durationMs": 2800,
+        "speedPxPerSecond": 17
+      }
+    }
+  }
+}

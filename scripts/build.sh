@@ -16,6 +16,7 @@ esac
 if [ -n "$package_dir" ]; then
   mkdir -p "$package_dir"
   install -m 755 "$ROOT/src-tauri/target/release/herdr-pets" "$package_dir/herdr-pets"
+  "$ROOT/scripts/package-source-fingerprint.sh" > "$package_dir/herdr-pets.source.sha256"
   echo "packaged: $package_dir/herdr-pets"
 fi
 

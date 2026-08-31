@@ -1,41 +1,30 @@
 {
   "formatVersion": 1,
-  "id": "viking",
+  "id": "mossback-turtle-monk",
   "packVersion": "1",
   "clips": {
-    "walk": {
-      "asset": "sprites/viking-walk.png",
-      "durationMs": 630,
+    "staff-walk": {
+      "asset": "walk.png",
+      "durationMs": 870,
       "role": "locomotion",
-      "cssClass": "clip-viking-walk",
       "sourceFacing": "right",
       "mirror": true
     },
-    "hammer": {
-      "asset": "sprites/viking-hammer.png",
-      "durationMs": 1080,
-      "role": "stationary",
-      "cssClass": "clip-viking-hammer",
+    "gentle-bow": {
+      "asset": "work.png",
+      "durationMs": 1110,
+      "role": "locomotion",
       "sourceFacing": "right",
-      "mirror": true
-    },
-    "think": {
-      "asset": "sprites/viking-think.png",
-      "durationMs": 1800,
-      "role": "stationary",
-      "cssClass": "clip-viking-think",
-      "sourceFacing": "right",
-      "mirror": true
+      "mirror": true,
+      "holdAsset": "done.png"
     }
   },
   "states": {
     "idle": {
       "completion": "restart",
       "flow": {
-        "type": "move",
-        "clip": "walk",
-        "durationMs": 1800,
-        "speedPxPerSecond": 18
+        "type": "hide",
+        "durationMs": 1000
       }
     },
     "working": {
@@ -45,14 +34,21 @@
         "steps": [
           {
             "type": "move",
-            "clip": "walk",
-            "durationMs": 2200,
-            "speedPxPerSecond": 27
+            "clip": "staff-walk",
+            "durationMs": 2600,
+            "speedPxPerSecond": 20
           },
           {
-            "type": "play",
-            "clip": "hammer",
-            "count": 4
+            "type": "move",
+            "clip": "gentle-bow",
+            "durationMs": 1110,
+            "speedPxPerSecond": 8
+          },
+          {
+            "type": "move",
+            "clip": "staff-walk",
+            "durationMs": 1700,
+            "speedPxPerSecond": 24
           }
         ]
       }
@@ -64,11 +60,11 @@
         "steps": [
           {
             "type": "play",
-            "clip": "think"
+            "clip": "gentle-bow"
           },
           {
             "type": "wait",
-            "durationMs": 300
+            "durationMs": 800
           }
         ]
       }
@@ -77,7 +73,7 @@
       "completion": "hold",
       "flow": {
         "type": "play",
-        "clip": "hammer"
+        "clip": "gentle-bow"
       }
     },
     "unknown": {
@@ -86,12 +82,14 @@
         "type": "sequence",
         "steps": [
           {
-            "type": "play",
-            "clip": "think"
+            "type": "move",
+            "clip": "staff-walk",
+            "durationMs": 1400,
+            "speedPxPerSecond": 14
           },
           {
-            "type": "wait",
-            "durationMs": 900
+            "type": "play",
+            "clip": "gentle-bow"
           }
         ]
       }

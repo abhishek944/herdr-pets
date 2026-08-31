@@ -1,0 +1,99 @@
+{
+  "formatVersion": 1,
+  "id": "viking",
+  "packVersion": "3",
+  "clips": {
+    "march": {
+      "asset": "walk.png",
+      "durationMs": 630,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "forge": {
+      "asset": "hammer.png",
+      "durationMs": 1080,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "scale": 1.7,
+      "holdAsset": "done.png"
+    },
+    "ponder": {
+      "asset": "think.png",
+      "durationMs": 1800,
+      "role": "stationary",
+      "sourceFacing": "right",
+      "mirror": true,
+      "scale": 1.2
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "march",
+            "durationMs": 2200,
+            "speedPxPerSecond": 27
+          },
+          {
+            "type": "move",
+            "clip": "forge",
+            "durationMs": 4320,
+            "speedPxPerSecond": 12
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "ponder"
+          },
+          {
+            "type": "wait",
+            "durationMs": 300
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "forge"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "ponder"
+          },
+          {
+            "type": "wait",
+            "durationMs": 900
+          }
+        ]
+      }
+    }
+  }
+}

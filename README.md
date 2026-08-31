@@ -10,20 +10,22 @@ village—never one window per agent and never an arbitrary agent limit.
 ## What it does
 
 - Polls every registered Herdr session once per second through safe Rust commands (no shell), with a two-second timeout and a 1 MiB output limit.
-- Assigns agents from a deliberately small approved cast: walking man, corgi, cat, and Viking worker.
+- Assigns agents from an approved cast of eleven companions: cat, corgi, walking man, Viking, fox ronin, turtle monk, raccoon sky pirate, dune scout, clockwork apprentice, automaton porter, and slime knight.
 - Runs state-authored sprite flows across the full screen while each name follows its character.
 - Turns characters only at screen edges and always faces them in their movement direction.
 - Selects a validated declarative behavior flow solely from agent state:
-  - `working` → walk, act, wait, choose, and repeat authored steps
+  - `working` → continuously move through distinct walk and action animations
   - `blocked` → waiting flow
-  - `idle` / `unknown` → gentle wandering flow
+  - `idle` → hidden through the pack's ordinary `hide` flow action
+  - `unknown` → each pet's cautious fallback flow
   - `done` → celebration flow
-- Lets behavior packs define clips and timed flows without scripts; see [the behavior pack format](docs/behavior-packs.md).
+- Keeps each pet's `flow.json` and APNG assets together in one self-contained folder; see [the behavior pack format](docs/behavior-packs.md).
 - Gives the Viking a working cycle that alternates walking and hammering, plus a seated thinking animation when blocked.
 - Uses no floating status symbols; the sprite animation communicates the current state.
 - Waits for three missed polls before a departed citizen fades away.
 - Shrinks citizens automatically for large crowds.
 - Labels each character with its Herdr pane name when present, otherwise its custom tab name, otherwise the current folder name.
+- Focuses the matching Herdr agent directly when its pet is clicked.
 - Keeps the window transparent, undecorated, always on top, and visible across
   macOS workspaces. Empty pixels are click-through while citizen pixels remain
   interactive.
@@ -35,8 +37,8 @@ village—never one window per agent and never an arbitrary agent limit.
 Herdr plugin (herdr-plugin.toml)
   └─ scripts/supervisor.sh
        └─ Tauri process
-            ├─ Rust: reads agent state plus cached pane and tab labels from Herdr
-            └─ WebView: TypeScript state + CSS citizens and animations
+            ├─ Rust: reads agent state, routes focus, and caches pane and tab labels
+            └─ WebView: TypeScript state, pet clicks, CSS citizens, and animations
 ```
 
 The plugin is only a lifecycle supervisor. Every Herdr startup registers its
@@ -110,16 +112,16 @@ GitHub Actions also builds both macOS targets with the declared Rust 1.88 minimu
 
 1. Run `./scripts/build.sh` and link the plugin.
 2. Invoke `herdr-pets.village-on` while at least two Herdr agents exist.
-3. Confirm citizens appear centered just above the Dock and clicks pass through.
+3. Confirm citizens appear centered just above the Dock, empty window space passes clicks through, and clicking a pet focuses its exact Herdr agent pane.
 4. Confirm each pet moves to a screen edge, turns only there, and continues in the direction it faces with its project name following above.
-5. Change agents between working, blocked, done, idle, and unknown; confirm each state immediately selects its configured flow.
-6. Watch a working pet move, perform its extreme action, and resume moving.
+5. Change agents between working, blocked, done, idle, and unknown; confirm idle flows hide the complete citizen while the other states restore it.
+6. Watch working pets use distinct movement and action animations. Confirm the Viking hammers, Ember practices with a sword, Mossback bows, Skiff scans, Mira checks her route map and drills with a spear, Jun repairs his bird, Brassbell sorts parcels, and Pebble blocks and flourishes its spoon.
 7. Invoke `herdr-pets.village-off` and confirm the strip disappears.
 
 ## Privacy
 
-The app makes no network requests. It reads only Herdr's local agent-list output.
-Only pane IDs, normalized status, and sanitized pane, tab, or folder labels cross into the web interface. Full paths and prompts are never displayed.
+The app makes no network requests. It reads Herdr's local agent and label data and sends a local focus command only when a pet is clicked.
+Only public agent IDs, normalized status, and sanitized pane, tab, or folder labels cross into the web interface. Full paths and prompts are never displayed.
 
 ## License
 

@@ -1,3 +1,5 @@
+import { CHARACTER_IDS, type CharacterId } from "./character-packs";
+
 export type HerdrStatus = "working" | "blocked" | "idle" | "done" | "unknown";
 
 export interface AgentView {
@@ -10,10 +12,6 @@ export interface AgentSnapshot {
   available: boolean;
   agents: AgentView[];
 }
-
-export const CHARACTER_IDS = ["human-male", "dog", "cat", "viking"] as const;
-
-export type CharacterId = (typeof CHARACTER_IDS)[number];
 
 export interface CitizenState extends AgentView {
   sprite: CharacterId;

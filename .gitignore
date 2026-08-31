@@ -6,6 +6,8 @@ node_modules/
 dist/
 *.log
 *.local
+__pycache__/
+*.py[cod]
 
 # Rust/Tauri output
 src-tauri/target/

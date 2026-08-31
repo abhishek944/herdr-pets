@@ -1,42 +1,50 @@
 {
   "formatVersion": 1,
-  "id": "dog",
-  "packVersion": "2",
+  "id": "cat",
+  "packVersion": "3",
   "clips": {
-    "walk": {
-      "asset": "sprites/dog.png",
+    "stalk": {
+      "asset": "walk.png",
       "durationMs": 720,
       "role": "locomotion",
-      "cssClass": "clip-dog-walk",
       "sourceFacing": "right",
       "mirror": true
     },
-    "rest": {
-      "asset": "sprites/dog.png",
-      "durationMs": 900,
+    "watch": {
+      "asset": "walk.png",
+      "durationMs": 720,
       "role": "stationary",
-      "cssClass": "clip-dog-walk",
       "sourceFacing": "right",
-      "mirror": true
+      "mirror": true,
+      "holdAsset": "done.png"
     }
   },
   "states": {
     "idle": {
       "completion": "restart",
       "flow": {
-        "type": "move",
-        "clip": "walk",
-        "durationMs": 1800,
-        "speedPxPerSecond": 22
+        "type": "hide",
+        "durationMs": 1000
       }
     },
     "working": {
       "completion": "restart",
       "flow": {
-        "type": "move",
-        "clip": "walk",
-        "durationMs": 4200,
-        "speedPxPerSecond": 34
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "stalk",
+            "durationMs": 1500,
+            "speedPxPerSecond": 22
+          },
+          {
+            "type": "move",
+            "clip": "stalk",
+            "durationMs": 2800,
+            "speedPxPerSecond": 35
+          }
+        ]
       }
     },
     "blocked": {
@@ -46,11 +54,11 @@
         "steps": [
           {
             "type": "play",
-            "clip": "rest"
+            "clip": "watch"
           },
           {
             "type": "wait",
-            "durationMs": 700
+            "durationMs": 1300
           }
         ]
       }
@@ -59,7 +67,7 @@
       "completion": "hold",
       "flow": {
         "type": "play",
-        "clip": "rest"
+        "clip": "watch"
       }
     },
     "unknown": {
@@ -68,12 +76,14 @@
         "type": "sequence",
         "steps": [
           {
-            "type": "play",
-            "clip": "rest"
+            "type": "move",
+            "clip": "stalk",
+            "durationMs": 800,
+            "speedPxPerSecond": 12
           },
           {
             "type": "wait",
-            "durationMs": 1100
+            "durationMs": 1200
           }
         ]
       }

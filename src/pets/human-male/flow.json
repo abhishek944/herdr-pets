@@ -1,42 +1,39 @@
 {
   "formatVersion": 1,
   "id": "human-male",
-  "packVersion": "2",
+  "packVersion": "3",
   "clips": {
-    "walk": {
-      "asset": "sprites/human-male.png",
-      "durationMs": 720,
+    "patrol": {
+      "asset": "walk.png",
+      "durationMs": 800,
       "role": "locomotion",
-      "cssClass": "clip-human-walk",
       "sourceFacing": "right",
       "mirror": true
     },
-    "rest": {
-      "asset": "sprites/human-male.png",
-      "durationMs": 900,
+    "inspect": {
+      "asset": "walk.png",
+      "durationMs": 800,
       "role": "stationary",
-      "cssClass": "clip-human-walk",
       "sourceFacing": "right",
-      "mirror": true
+      "mirror": true,
+      "holdAsset": "done.png"
     }
   },
   "states": {
     "idle": {
       "completion": "restart",
       "flow": {
-        "type": "move",
-        "clip": "walk",
-        "durationMs": 1800,
-        "speedPxPerSecond": 18
+        "type": "hide",
+        "durationMs": 1000
       }
     },
     "working": {
       "completion": "restart",
       "flow": {
         "type": "move",
-        "clip": "walk",
-        "durationMs": 4200,
-        "speedPxPerSecond": 30
+        "clip": "patrol",
+        "durationMs": 5200,
+        "speedPxPerSecond": 29
       }
     },
     "blocked": {
@@ -46,11 +43,11 @@
         "steps": [
           {
             "type": "play",
-            "clip": "rest"
+            "clip": "inspect"
           },
           {
             "type": "wait",
-            "durationMs": 700
+            "durationMs": 900
           }
         ]
       }
@@ -59,23 +56,16 @@
       "completion": "hold",
       "flow": {
         "type": "play",
-        "clip": "rest"
+        "clip": "inspect"
       }
     },
     "unknown": {
       "completion": "restart",
       "flow": {
-        "type": "sequence",
-        "steps": [
-          {
-            "type": "play",
-            "clip": "rest"
-          },
-          {
-            "type": "wait",
-            "durationMs": 1100
-          }
-        ]
+        "type": "move",
+        "clip": "patrol",
+        "durationMs": 2500,
+        "speedPxPerSecond": 18
       }
     }
   }

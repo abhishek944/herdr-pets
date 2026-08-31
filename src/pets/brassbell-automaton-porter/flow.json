@@ -1,0 +1,98 @@
+{
+  "formatVersion": 1,
+  "id": "brassbell-automaton-porter",
+  "packVersion": "1",
+  "clips": {
+    "heavy-march": {
+      "asset": "walk.png",
+      "durationMs": 930,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true
+    },
+    "parcel-sort": {
+      "asset": "work.png",
+      "durationMs": 1080,
+      "role": "locomotion",
+      "sourceFacing": "right",
+      "mirror": true,
+      "holdAsset": "done.png"
+    }
+  },
+  "states": {
+    "idle": {
+      "completion": "restart",
+      "flow": {
+        "type": "hide",
+        "durationMs": 1000
+      }
+    },
+    "working": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "move",
+            "clip": "heavy-march",
+            "durationMs": 2400,
+            "speedPxPerSecond": 18
+          },
+          {
+            "type": "move",
+            "clip": "parcel-sort",
+            "durationMs": 2160,
+            "speedPxPerSecond": 10
+          },
+          {
+            "type": "move",
+            "clip": "heavy-march",
+            "durationMs": 1200,
+            "speedPxPerSecond": 23
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "parcel-sort"
+          },
+          {
+            "type": "wait",
+            "durationMs": 700
+          }
+        ]
+      }
+    },
+    "done": {
+      "completion": "hold",
+      "flow": {
+        "type": "play",
+        "clip": "parcel-sort"
+      }
+    },
+    "unknown": {
+      "completion": "restart",
+      "flow": {
+        "type": "sequence",
+        "steps": [
+          {
+            "type": "play",
+            "clip": "parcel-sort"
+          },
+          {
+            "type": "move",
+            "clip": "heavy-march",
+            "durationMs": 1500,
+            "speedPxPerSecond": 12
+          }
+        ]
+      }
+    }
+  }
+}
