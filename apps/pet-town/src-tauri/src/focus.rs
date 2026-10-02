@@ -3,47 +3,7 @@ mod herdr;
 pub(crate) use crate::focus_id::{herdr_owner_key, public_agent_id};
 use std::ffi::OsString;
 
-#[derive(Clone, Debug)]
-pub(crate) enum FocusRoute {
-    Herdr {
-        pane_id: String,
-        socket: Option<String>,
-        agent_session_id: String,
-    },
-    Application {
-        bundle_id: String,
-    },
-    Codex {
-        thread_id: Option<String>,
-        fallback_bundle_id: Option<String>,
-    },
-}
-
-impl From<pet_town_agent_broker::FocusRoute> for FocusRoute {
-    fn from(route: pet_town_agent_broker::FocusRoute) -> Self {
-        match route {
-            pet_town_agent_broker::FocusRoute::Herdr {
-                pane_id,
-                socket,
-                agent_session_id,
-            } => Self::Herdr {
-                pane_id,
-                socket,
-                agent_session_id,
-            },
-            pet_town_agent_broker::FocusRoute::Application { bundle_id } => {
-                Self::Application { bundle_id }
-            }
-            pet_town_agent_broker::FocusRoute::Codex {
-                thread_id,
-                fallback_bundle_id,
-            } => Self::Codex {
-                thread_id,
-                fallback_bundle_id,
-            },
-        }
-    }
-}
+use crate::focus_route::FocusRoute;
 
 fn herdr_binary() -> OsString {
     crate::orchestrator::herdr_binary()
@@ -58,8 +18,20 @@ fn run_focus_route(herdr: &OsString, target: &FocusRoute) -> Result<(), String> 
         FocusRoute::Herdr {
             pane_id,
             socket,
+            machine,
             agent_session_id,
-        } => herdr::focus(herdr, pane_id, socket.as_deref(), agent_session_id),
+        } => {
+            if machine.is_some() {
+                pet_town_agent_broker::focus_route(&pet_town_agent_broker::FocusRoute::Herdr {
+                    pane_id: pane_id.clone(),
+                    socket: None,
+                    machine: machine.clone(),
+                    agent_session_id: agent_session_id.clone(),
+                })
+            } else {
+                herdr::focus(herdr, pane_id, socket.as_deref(), agent_session_id)
+            }
+        }
         FocusRoute::Application { bundle_id } => {
             #[cfg(target_os = "macos")]
             return crate::macos_app_focus::activate_running_application(bundle_id);
@@ -80,12 +52,16 @@ fn run_user_focus_route(herdr: &OsString, target: &FocusRoute) -> Result<(), Str
     let FocusRoute::Herdr {
         pane_id,
         socket,
+        machine,
         agent_session_id,
     } = target
     else {
         return run_focus_route(herdr, target);
     };
 
+    if machine.is_some() {
+        return run_focus_route(herdr, target);
+    }
     let verified = herdr::verify(herdr, pane_id, socket.as_deref(), agent_session_id)?;
     herdr::focus_verified(
         herdr,
@@ -115,7 +91,10 @@ pub(crate) fn focus_current_agent(id: &str) -> Result<(), String> {
     let route = if matches!(id, "pet-town-assistant" | "pet-town-mayor") {
         crate::sessions::mayor_primary_route()
     } else {
-        crate::sessions::collect_visible().focus_routes.remove(id)
+        crate::sessions::collect_visible()
+            .focus_routes
+            .remove(id)
+            .or_else(|| pet_town_agent_broker::remote_focus_route(id))
     };
     let target = route
         .map(FocusRoute::from)

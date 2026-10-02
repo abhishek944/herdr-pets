@@ -85,3 +85,17 @@ Temporary diagnostics currently live in [focus_trace.rs](../apps/pet-town/src-ta
 For a future regression, distinguish these stages: input received → route selected → target activation requested → target active → foreground after settling. Before the final fix the trace repeatedly showed Pet Town foreground before dispatch and stale helper timeouts. After it, the original adapter stayed foreground until switching directly to the target, and Herdr completed successfully in roughly 0.6 seconds for the observed clicks.
 
 Diagnostics can be removed separately after preserving the three-part fix and its verification. Do not treat temporary tracing or local PID values as part of the product contract.
+
+## Remote companions
+
+A remote companion retains its saved machine ID in the private focus route. The
+headless focus helper resolves its opaque ID against the current enabled machine
+catalog, queries only that machine, and validates the native agent session before
+issuing any focus commands. All commands retain `--machine <profile-id>`; local
+socket and pane context are removed. A changed session or unavailable machine
+fails without falling back to a local pane with the same ID.
+
+The existing local focus and macOS panel/main-run-loop flow is preserved. Remote
+server focus currently does not switch a local TUI's selected machine or activate
+a terminal host: users select the machine in Herdr to view the selected pane.
+Direct visible transitions for remote companions still require user observation.

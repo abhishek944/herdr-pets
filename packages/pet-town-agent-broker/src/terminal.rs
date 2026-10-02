@@ -19,11 +19,18 @@ pub fn terminal_target(id: &str) -> Result<TerminalTarget, String> {
     let Some(FocusRoute::Herdr {
         pane_id,
         socket,
+        machine,
         agent_session_id,
     }) = route
     else {
         return Err("This companion has no available Herdr terminal.".into());
     };
+    if machine.is_some() {
+        return Err(
+            "Remote companions are monitored in Pet Town. Use Herdr to view their terminals."
+                .into(),
+        );
+    }
     if agent_session_id.starts_with("ephemeral:") {
         return Err("Herdr has not reported a stable session for this companion.".into());
     }

@@ -1,5 +1,5 @@
 use crate::agents::ParsedAgent;
-use crate::{command, labels, state, AdapterAgent, AdapterSnapshot, FocusRoute};
+use crate::{command, labels, remote, state, AdapterAgent, AdapterSnapshot, FocusRoute};
 use std::ffi::OsString;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -76,13 +76,19 @@ fn registered_sessions() -> Vec<Option<String>> {
     }
 }
 
-fn query_session(
+pub(crate) fn query_session(
     herdr: &OsString,
     socket: Option<String>,
+    machine: Option<(String, String)>,
     parse: Parser,
 ) -> Option<Vec<AdapterAgent>> {
     let arguments = vec!["agent".to_string(), "list".to_string()];
-    let text = command::run(herdr, socket.as_deref(), &arguments)?;
+    let text = command::run_on_machine(
+        herdr,
+        socket.as_deref(),
+        machine.as_ref().map(|(id, _)| id.as_str()),
+        &arguments,
+    )?;
     let parsed = parse(&text).ok()?;
     let mut workspaces: Vec<String> = parsed
         .iter()
@@ -90,7 +96,11 @@ fn query_session(
         .collect();
     workspaces.sort();
     workspaces.dedup();
-    let session_labels = labels::for_session(herdr, socket.as_deref(), &workspaces);
+    let session_labels = if machine.is_some() {
+        labels::SessionLabels::default()
+    } else {
+        labels::for_session(herdr, socket.as_deref(), &workspaces)
+    };
 
     Some(
         parsed
@@ -111,8 +121,15 @@ fn query_session(
                 let agent_session_id = agent
                     .agent_session_id
                     .unwrap_or_else(|| format!("ephemeral:{pane_id}"));
-                let public_id = public_id(socket.as_deref(), &agent_session_id);
-                let owner_key = owner_key(socket.as_deref(), &agent_session_id);
+                let (public_id, owner_key) = if let Some((id, label)) = &machine {
+                    agent.view.label = format!("{label}: {}", agent.view.label);
+                    remote_identity(id, &agent_session_id)
+                } else {
+                    (
+                        public_id(socket.as_deref(), &agent_session_id),
+                        owner_key(socket.as_deref(), &agent_session_id),
+                    )
+                };
                 agent.view.id = public_id;
                 agent.view.source = "herdr".to_string();
                 AdapterAgent {
@@ -121,7 +138,8 @@ fn query_session(
                     view: agent.view,
                     focus_route: Some(FocusRoute::Herdr {
                         pane_id,
-                        socket: socket.clone(),
+                        socket: socket.clone().filter(|_| machine.is_none()),
+                        machine: machine.as_ref().map(|(id, _)| id.clone()),
                         agent_session_id,
                     }),
                 }
@@ -132,16 +150,17 @@ fn query_session(
 
 pub(crate) fn snapshot(parse: Parser) -> AdapterSnapshot {
     let herdr = binary();
+    // Remote SSH work never blocks the local discovery path.
+    let mut agents = remote::snapshot(&herdr);
     let sessions = registered_sessions();
-    let mut available = false;
-    let mut agents = Vec::new();
+    let mut available = !agents.is_empty();
     for batch in sessions.chunks(MAX_CONCURRENT_SESSION_QUERIES) {
         let workers: Vec<_> = batch
             .iter()
             .cloned()
             .map(|socket| {
                 let herdr = herdr.clone();
-                std::thread::spawn(move || query_session(&herdr, socket, parse))
+                std::thread::spawn(move || query_session(&herdr, socket, None, parse))
             })
             .collect();
         for worker in workers {
@@ -154,4 +173,12 @@ pub(crate) fn snapshot(parse: Parser) -> AdapterSnapshot {
     agents.sort_by(|left, right| left.view.id.cmp(&right.view.id));
     agents.dedup_by(|left, right| left.owner_key == right.owner_key);
     AdapterSnapshot { available, agents }
+}
+
+pub(crate) fn remote_identity(machine: &str, session: &str) -> (String, String) {
+    let namespace = format!("machine:{}", opaque(machine));
+    (
+        format!("herdr:{namespace}:{}", opaque(session)),
+        format!("herdr-session:{namespace}:{}", opaque(session)),
+    )
 }
