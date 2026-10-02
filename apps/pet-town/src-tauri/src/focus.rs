@@ -90,11 +90,10 @@ fn run_user_focus_route(herdr: &OsString, target: &FocusRoute) -> Result<(), Str
 pub(crate) fn focus_current_agent(id: &str) -> Result<(), String> {
     let route = if matches!(id, "pet-town-assistant" | "pet-town-mayor") {
         crate::sessions::mayor_primary_route()
+    } else if id.starts_with("herdr:machine:") {
+        pet_town_agent_broker::remote_focus_route(id)
     } else {
-        crate::sessions::collect_visible()
-            .focus_routes
-            .remove(id)
-            .or_else(|| pet_town_agent_broker::remote_focus_route(id))
+        crate::sessions::collect_visible().focus_routes.remove(id)
     };
     let target = route
         .map(FocusRoute::from)

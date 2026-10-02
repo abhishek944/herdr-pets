@@ -15,6 +15,8 @@ export interface AgentView {
   status: AgentStatus | string;
   label: string;
   source: string;
+  supportsTerminal?: boolean;
+  remoteMachine?: string | null;
 }
 
 export interface AgentSnapshot {

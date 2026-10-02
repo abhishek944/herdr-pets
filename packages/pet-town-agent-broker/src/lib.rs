@@ -11,7 +11,11 @@ mod macos_activation;
 mod remote;
 #[cfg(all(test, unix))]
 mod remote_checks;
+#[cfg(all(test, unix))]
+mod remote_lifecycle_checks;
+mod remote_monitor;
 mod remote_route;
+mod remote_schedule;
 mod state;
 mod terminal;
 mod terminal_api;
@@ -24,6 +28,7 @@ use std::collections::{BTreeMap, HashMap};
 
 pub use agents::AgentView;
 pub use focus::{focus_route, focus_route_with_codex_activation};
+pub use remote_monitor::RemoteMonitor;
 pub use terminal::{terminal_target, TerminalTarget};
 pub use token_activity::{TokenActivity, TokenMeasurement};
 

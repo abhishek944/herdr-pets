@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { installPetInteractions } from "./pet-interactions";
+import { createAgentFocus } from "./agent-focus";
 import { VillageRenderer, type HitRegion } from "./renderer";
 import {
   allCharacterIds,
@@ -76,9 +77,7 @@ systemReducedMotion.addEventListener("change", (event) => {
   renderer.setSystemReducedMotion(event.matches);
 });
 installPetInteractions(village, {
-  focusAgent: (id) => {
-    void invoke("focus_agent", { id }).catch((error) => console.warn("Could not open pet", error));
-  },
+  focusAgent: createAgentFocus(village, (id) => invoke("focus_agent", { id })),
   openPreferences: (id) => {
     const petId = citizens.get(id)?.sprite;
     if (petId) void invoke("open_preferences", { petId });

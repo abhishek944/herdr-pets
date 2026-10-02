@@ -65,6 +65,7 @@ fn remote_discovery_preserves_machine_routes_and_duplicate_session_ids() {
             Some("/wrong/local/socket".into()),
             Some((machine.into(), "Build".into())),
             agents::parse_agent_list,
+            None,
         )
         .unwrap()
         .remove(0)
@@ -75,6 +76,8 @@ fn remote_discovery_preserves_machine_routes_and_duplicate_session_ids() {
     assert_ne!(first.view.id, second.view.id);
     assert_eq!(first.view.label, "Build: project");
     assert_eq!(first.view.status, "working");
+    assert!(!first.view.supports_terminal);
+    assert_eq!(first.view.remote_machine.as_deref(), Some("Build"));
     assert_eq!(
         first.focus_route,
         Some(FocusRoute::Herdr {
@@ -123,6 +126,7 @@ fn remote_focus_routes_every_command_and_rejects_replaced_agents() {
 #[test]
 fn background_poll_returns_immediately_and_ignores_failed_or_disabled_machines() {
     let fake = FakeHerdr::new();
+    let monitor = crate::RemoteMonitor::with_binary(fake.binary.clone());
     let started = Instant::now();
     assert!(remote::snapshot(&fake.binary).is_empty());
     assert!(started.elapsed() < Duration::from_millis(100));
@@ -136,6 +140,7 @@ fn background_poll_returns_immediately_and_ignores_failed_or_disabled_machines()
         std::thread::sleep(Duration::from_millis(20));
     }
     assert!(!fake.log().contains("--machine disabled"));
+    monitor.stop();
 }
 
 #[test]

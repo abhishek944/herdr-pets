@@ -7,3 +7,21 @@
 @import "./styles-pet-menu.css";
 
 @import "./styles-citizen-overlays.css";
+
+.agent-focus-notice {
+  position: absolute;
+  z-index: 30;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(420px, calc(100% - 24px));
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: white;
+  background: rgb(18 23 32 / 0.94);
+  box-shadow: 0 3px 12px rgb(0 0 0 / 0.3);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  pointer-events: none;
+}

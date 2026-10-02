@@ -99,6 +99,7 @@ pub fn run() {
         .manage(app_lock)
         .manage(app_updates::AppUpdates::default())
         .manage(onboarding::Onboarding::default())
+        .manage(pet_town_agent_broker::RemoteMonitor::start())
         .manage(window::HitRegions::default())
         .manage(village_visibility::VillageVisibility::default())
         .manage(preferences::PreferencesStore::load_default())

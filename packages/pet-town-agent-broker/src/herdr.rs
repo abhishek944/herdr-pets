@@ -3,6 +3,7 @@ use crate::{command, labels, remote, state, AdapterAgent, AdapterSnapshot, Focus
 use std::ffi::OsString;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::AtomicBool;
 
 const MAX_CONCURRENT_SESSION_QUERIES: usize = 8;
 
@@ -81,13 +82,15 @@ pub(crate) fn query_session(
     socket: Option<String>,
     machine: Option<(String, String)>,
     parse: Parser,
+    cancelled: Option<&AtomicBool>,
 ) -> Option<Vec<AdapterAgent>> {
     let arguments = vec!["agent".to_string(), "list".to_string()];
-    let text = command::run_on_machine(
+    let text = command::run_cancellable(
         herdr,
         socket.as_deref(),
         machine.as_ref().map(|(id, _)| id.as_str()),
         &arguments,
+        cancelled,
     )?;
     let parsed = parse(&text).ok()?;
     let mut workspaces: Vec<String> = parsed
@@ -132,6 +135,9 @@ pub(crate) fn query_session(
                 };
                 agent.view.id = public_id;
                 agent.view.source = "herdr".to_string();
+                agent.view.supports_terminal =
+                    machine.is_none() && !agent_session_id.starts_with("ephemeral:");
+                agent.view.remote_machine = machine.as_ref().map(|(_, label)| label.clone());
                 AdapterAgent {
                     owner_key,
                     hosted_owner_key: None,
@@ -160,7 +166,7 @@ pub(crate) fn snapshot(parse: Parser) -> AdapterSnapshot {
             .cloned()
             .map(|socket| {
                 let herdr = herdr.clone();
-                std::thread::spawn(move || query_session(&herdr, socket, None, parse))
+                std::thread::spawn(move || query_session(&herdr, socket, None, parse, None))
             })
             .collect();
         for worker in workers {

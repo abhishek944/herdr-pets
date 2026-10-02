@@ -40,6 +40,11 @@ export function bindCompanionControls(root, context) {
     render();
     try {
       await town.bridge.action("focusAgent", { id: selected.id });
+      if (selected.remoteMachine && town.controller.selected?.id === selected.id) {
+        field("feedback").textContent =
+          `Pane selected. Open Herdr and select “${selected.remoteMachine}” to view it.`;
+        field("feedback").hidden = false;
+      }
     } catch (error) {
       field("feedback").textContent = String(error.message ?? error);
       field("feedback").hidden = false;
@@ -103,10 +108,19 @@ export function bindCompanionControls(root, context) {
       String(Boolean(selected && !controller.firstPerson)),
     );
     control("focus").textContent = pending
-      ? "Opening…"
-      : selected?.source === "herdr" || selected?.isMayor
-        ? "Open in Herdr ↗"
-        : "Open agent ↗";
+      ? selected?.remoteMachine
+        ? "Selecting…"
+        : "Opening…"
+      : selected?.remoteMachine
+        ? "Select remote pane"
+        : selected?.source === "herdr" || selected?.isMayor
+          ? "Open in Herdr ↗"
+          : "Open agent ↗";
+    control("focus").title = selected?.remoteMachine
+      ? `Open Herdr and select “${selected.remoteMachine}” to view the selected pane. Remote terminals are not available in Pet Town.`
+      : "";
+    field("remoteHint").hidden = !selected?.remoteMachine;
+    field("remoteHint").textContent = control("focus").title;
     for (const name of ["control", "first", "third", "leave", "focus"])
       control(name).disabled = !selected || (name === "focus" && pending);
     gallery.render();

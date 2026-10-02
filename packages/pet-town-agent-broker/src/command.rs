@@ -1,6 +1,7 @@
 use std::ffi::OsString;
 use std::io::Read;
 use std::process::{Child, ChildStdout, Command, ExitStatus, Stdio};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 #[cfg(not(unix))]
 use wait_timeout::ChildExt;
@@ -23,6 +24,7 @@ fn collect_output(
     child: &mut Child,
     mut stdout: ChildStdout,
     timeout: Duration,
+    cancelled: Option<&AtomicBool>,
 ) -> Option<(ExitStatus, Vec<u8>)> {
     use std::os::fd::AsRawFd;
 
@@ -38,6 +40,10 @@ fn collect_output(
     let mut bytes = Vec::new();
     let mut buffer = [0_u8; 8192];
     loop {
+        if cancelled.is_some_and(|flag| flag.load(Ordering::Relaxed)) {
+            terminate(child);
+            return None;
+        }
         loop {
             match stdout.read(&mut buffer) {
                 Ok(0) => break,
@@ -90,6 +96,7 @@ fn collect_output(
     child: &mut Child,
     mut stdout: ChildStdout,
     timeout: Duration,
+    cancelled: Option<&AtomicBool>,
 ) -> Option<(ExitStatus, Vec<u8>)> {
     let reader = std::thread::spawn(move || {
         let mut bytes = Vec::new();
@@ -98,11 +105,20 @@ fn collect_output(
             .read_to_end(&mut bytes)
             .map(|_| bytes)
     });
-    let status = match child.wait_timeout(timeout) {
-        Ok(Some(status)) => status,
-        _ => {
+    let deadline = Instant::now() + timeout;
+    let status = loop {
+        if Instant::now() >= deadline || cancelled.is_some_and(|flag| flag.load(Ordering::Relaxed))
+        {
             terminate(child);
             return None;
+        }
+        match child.wait_timeout(Duration::from_millis(10)) {
+            Ok(Some(status)) => break status,
+            Ok(None) => continue,
+            Err(_) => {
+                terminate(child);
+                return None;
+            }
         }
     };
     let bytes = reader.join().ok()?.ok()?;
@@ -119,6 +135,19 @@ pub(crate) fn run_on_machine(
     machine: Option<&str>,
     arguments: &[String],
 ) -> Option<String> {
+    run_cancellable(herdr, socket, machine, arguments, None)
+}
+
+pub(crate) fn run_cancellable(
+    herdr: &OsString,
+    socket: Option<&str>,
+    machine: Option<&str>,
+    arguments: &[String],
+    cancelled: Option<&AtomicBool>,
+) -> Option<String> {
+    if cancelled.is_some_and(|flag| flag.load(Ordering::Relaxed)) {
+        return None;
+    }
     let mut command = Command::new(herdr);
     if let Some(id) = machine {
         command.args(["--machine", id]);
@@ -157,6 +186,7 @@ pub(crate) fn run_on_machine(
         } else {
             HERDR_TIMEOUT
         },
+        cancelled,
     )?;
     status
         .success()

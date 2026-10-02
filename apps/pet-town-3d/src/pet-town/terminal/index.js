@@ -67,7 +67,8 @@ export function createTerminalDock({ context, controller, bridge, onVisibility }
     });
   }
   function attach(control = requestedControl, takeover = false) {
-    if (!record || record.source !== "herdr" || disposed || suspended) return;
+    if (!record || record.source !== "herdr" || record.supportsTerminal !== true) return;
+    if (disposed || suspended) return;
     terminalMode = true;
     view.showTerminal(true);
     requestedControl = control;

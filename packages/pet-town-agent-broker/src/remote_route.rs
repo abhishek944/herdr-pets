@@ -18,6 +18,7 @@ pub(crate) fn resolve(binary: &OsString, id: &str) -> Option<FocusRoute> {
             None,
             Some((machine.id, machine.label)),
             agents::parse_agent_list,
+            None,
         )?
         .into_iter()
         .find(|agent| agent.view.id == id)?

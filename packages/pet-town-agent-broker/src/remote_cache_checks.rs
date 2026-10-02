@@ -9,11 +9,11 @@ fn stale_pets_become_unknown_and_expire() {
         None,
         Some(("m1".into(), "Build".into())),
         agents::parse_agent_list,
+        None,
     )
     .unwrap();
     update(&fake.binary, |cache| {
-        cache.running = true; // Keep this deterministic test from spawning a poll.
-        cache.machines.insert(
+        cache.insert(
             "m1".into(),
             Record {
                 updated: Instant::now() - Duration::from_secs(11),
@@ -23,7 +23,7 @@ fn stale_pets_become_unknown_and_expire() {
     });
     assert_eq!(snapshot(&fake.binary)[0].view.status, "unknown");
     update(&fake.binary, |cache| {
-        cache.machines.get_mut("m1").unwrap().updated = Instant::now() - Duration::from_secs(31);
+        cache.get_mut("m1").unwrap().updated = Instant::now() - Duration::from_secs(31);
     });
     assert!(snapshot(&fake.binary).is_empty());
 }
@@ -32,7 +32,6 @@ fn stale_pets_become_unknown_and_expire() {
 fn removing_profiles_clears_cached_pets() {
     let fake = FakeHerdr::new();
     refresh(&fake.binary);
-    update(&fake.binary, |cache| cache.running = true);
     assert_eq!(snapshot(&fake.binary).len(), 2);
     std::fs::write(fake.directory.join("herdr.removed"), "").unwrap();
     refresh(&fake.binary);

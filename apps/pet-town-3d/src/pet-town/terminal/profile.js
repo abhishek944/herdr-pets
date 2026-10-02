@@ -28,15 +28,22 @@ export function createDockProfile(dock) {
     root,
     controls,
     render(record, controller) {
-      const state = `${record.source}:${Boolean(record.controlled)}:${controller.firstPerson}`;
+      const remote = record.remoteMachine ?? "";
+      const state = `${record.source}:${remote}:${Boolean(record.controlled)}:${controller.firstPerson}`;
       if (state === previousState) return;
       previousState = state;
-      const terminalAvailable = record.source === "herdr";
-      controls.open.textContent = terminalAvailable ? "Open in Herdr ↗" : "Open agent ↗";
+      const terminalAvailable = record.source === "herdr" && record.supportsTerminal === true;
+      controls.open.textContent = remote
+        ? "Select remote pane"
+        : terminalAvailable
+          ? "Open in Herdr ↗"
+          : "Open agent ↗";
       controls.observe.hidden = controls.interact.hidden = !terminalAvailable;
-      root.querySelector('[data-profile="hint"]').textContent = terminalAvailable
-        ? "Observe the terminal, or choose Interact to type into it."
-        : "Open the agent in its coding tool.";
+      root.querySelector('[data-profile="hint"]').textContent = remote
+        ? `Open Herdr and select “${remote}” to view the selected pane. Remote terminals are not available in Pet Town.`
+        : terminalAvailable
+          ? "Observe the terminal, or choose Interact to type into it."
+          : "Open the agent in its coding tool.";
       root.querySelector('[data-profile="following"]').textContent = record.controlled
         ? "You’re in control of this companion."
         : "Following · roaming freely";

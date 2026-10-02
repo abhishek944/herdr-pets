@@ -65,6 +65,9 @@ export function updateCitizenElement(element: HTMLElement, citizen: CitizenState
   const announced = citizen.source === "orchestrator"
     ? (citizen.status === "speaking" ? "Speaking" : citizen.status === "listening" ? "Listening" : "Walking") : citizen.status;
   element.setAttribute("aria-label", `${citizen.label}, ${announced}`);
+  element.title = citizen.remoteMachine
+    ? `Select pane on ${citizen.remoteMachine}. Open Herdr and select that machine to view it.`
+    : "Open agent";
 
   const project = element.querySelector<HTMLElement>(".project");
   if (project && project.textContent !== citizen.label) project.textContent = citizen.label;

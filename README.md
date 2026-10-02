@@ -161,8 +161,12 @@ Both the local CLI and each remote installation must support Herdr's
 `--machine <profile-id>` API forwarding. Existing SSH authentication is reused;
 Pet Town does not install or restart remote servers or answer authentication prompts.
 
-Remote discovery runs in the background, with at most eight simultaneous queries,
-a five-second polling interval and an eight-second command timeout. Local pets
+The desktop app owns remote discovery and cancels its subprocesses on exit.
+Snapshot reads and short-lived focus helpers never start background discovery.
+Remote discovery allows at most eight simultaneous queries and an eight-second
+command timeout. Healthy machines poll independently every five seconds, with
+capacity reserved so slow hosts cannot prevent their refresh. Failed queries
+back off from ten seconds to one minute. Local pets
 continue updating while a remote machine is unreachable. A disconnected pet is
 shown with unknown status and expires after 30 seconds without a successful poll.
 Disabled or removed profiles disappear on the next successful machine-list refresh.
@@ -170,7 +174,10 @@ Labels include the saved machine name; pet identity uses the profile ID and nati
 agent session so identical pane/session IDs on different hosts stay separate.
 
 Remote pet clicks validate and select the pane on the correct remote server.
+The 2D strip stays quiet on success; hover over the pet for machine-selection
+instructions. The 3D action is labeled **Select remote pane**, with instructions
+shown beside it.
 Herdr's machine forwarding does not switch the selected machine in an existing
 local TUI; select the machine in Herdr to view that pane. Pet Town's embedded
-terminal viewer currently supports local sessions only. The `--snapshot` CLI
+terminal viewer is offered only for supported local sessions. The `--snapshot` CLI
 performs an explicit synchronous remote refresh before printing its result.

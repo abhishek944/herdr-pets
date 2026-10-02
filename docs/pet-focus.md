@@ -95,7 +95,19 @@ issuing any focus commands. All commands retain `--machine <profile-id>`; local
 socket and pane context are removed. A changed session or unavailable machine
 fails without falling back to a local pane with the same ID.
 
+Remote IDs go directly to that resolver without collecting local sessions or
+starting a remote discovery round. Only the desktop GUI owns a `RemoteMonitor`;
+snapshot reads are passive, and the monitor cancels and joins its subprocesses
+on shutdown. The one-shot `--snapshot` refresh joins all its work before returning.
+
 The existing local focus and macOS panel/main-run-loop flow is preserved. Remote
-server focus currently does not switch a local TUI's selected machine or activate
-a terminal host: users select the machine in Herdr to view the selected pane.
-Direct visible transitions for remote companions still require user observation.
+server selection does not switch a local TUI's selected machine or activate a
+terminal host. The 3D action therefore says **Select remote pane**, displays the
+manual machine-selection step, and never offers an unsupported embedded terminal.
+The 2D strip keeps that instruction in the pet's hover tooltip and shows only
+errors in the strip without activating a window; progress and successful selection
+do not display popup bubbles. Local pets retain the direct visible-transition
+requirement; remote selection may require the manual machine-selection step.
+
+Run `pnpm run check:broker` and `pnpm run check:remote-ui` for subprocess ownership,
+cancellation, timeouts, per-machine scheduling, and renderer capability checks.
