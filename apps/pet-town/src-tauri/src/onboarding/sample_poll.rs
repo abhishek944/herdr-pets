@@ -48,7 +48,7 @@ pub(super) fn poll(state: &Onboarding) {
     let broker = crate::sessions::collect_visible();
     let candidate = broker.snapshot.agents.iter().find(|agent| {
         if let Some(owner) = &owner {
-            matches!(broker.focus_routes.get(&agent.id), Some(FocusRoute::Herdr { pane_id, agent_session_id, socket })
+            matches!(broker.focus_routes.get(&agent.id), Some(FocusRoute::Herdr { pane_id, agent_session_id, socket, machine: None })
                 if socket == &owner.socket && Some(pane_id) == owner.pane.as_ref() && owner.session.as_ref().is_some_and(|session| session == agent_session_id))
         } else {
             agent.source == "herdr" && progress.own_baseline.as_ref().is_some_and(|ids| !ids.contains(&agent.id))

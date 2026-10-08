@@ -29,10 +29,10 @@ export function createDockProfile(dock) {
     controls,
     render(record, controller) {
       const remote = record.remoteMachine ?? "";
-      const state = `${record.source}:${remote}:${Boolean(record.controlled)}:${controller.firstPerson}`;
+      const terminalAvailable = record.source === "herdr" && record.supportsTerminal === true;
+      const state = `${record.source}:${remote}:${terminalAvailable}:${Boolean(record.controlled)}:${controller.firstPerson}`;
       if (state === previousState) return;
       previousState = state;
-      const terminalAvailable = record.source === "herdr" && record.supportsTerminal === true;
       controls.open.textContent = remote
         ? "Select remote pane"
         : terminalAvailable
