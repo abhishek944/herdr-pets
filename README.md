@@ -178,6 +178,10 @@ The 2D strip stays quiet on success; hover over the pet for machine-selection
 instructions. The 3D action is labeled **Select remote pane**, with instructions
 shown beside it.
 Herdr's machine forwarding does not switch the selected machine in an existing
-local TUI; select the machine in Herdr to view that pane. Pet Town's embedded
-terminal viewer is offered only for supported local sessions. The `--snapshot` CLI
+local TUI; select the machine in Herdr to view that pane. The existing terminal viewer now supports
+read-only **Observe** for remote companions in Godot and the browser town.
+Input/control remains local-only. Remote Observe reuses the saved SSH target and
+session; SSH authentication and host verification must work noninteractively,
+and Herdr must be on the remote SSH PATH. Linux/macOS POSIX SSH servers are
+supported. The `--snapshot` CLI
 performs an explicit synchronous remote refresh before printing its result.

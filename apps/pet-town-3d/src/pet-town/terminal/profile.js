@@ -30,7 +30,8 @@ export function createDockProfile(dock) {
     render(record, controller) {
       const remote = record.remoteMachine ?? "";
       const terminalAvailable = record.source === "herdr" && record.supportsTerminal === true;
-      const state = `${record.source}:${remote}:${terminalAvailable}:${Boolean(record.controlled)}:${controller.firstPerson}`;
+      const observable = record.source === "herdr" && record.supportsObserve === true;
+      const state = `${record.source}:${remote}:${terminalAvailable}:${observable}:${Boolean(record.controlled)}:${controller.firstPerson}`;
       if (state === previousState) return;
       previousState = state;
       controls.open.textContent = remote
@@ -38,9 +39,10 @@ export function createDockProfile(dock) {
         : terminalAvailable
           ? "Open in Herdr ↗"
           : "Open agent ↗";
-      controls.observe.hidden = controls.interact.hidden = !terminalAvailable;
+      controls.observe.hidden = !observable;
+      controls.interact.hidden = !terminalAvailable;
       root.querySelector('[data-profile="hint"]').textContent = remote
-        ? `Open Herdr and select “${remote}” to view the selected pane. Remote terminals are not available in Pet Town.`
+        ? `Open Herdr and select “${remote}” to view the selected pane. Observe remote output here; use Herdr for input.`
         : terminalAvailable
           ? "Observe the terminal, or choose Interact to type into it."
           : "Open the agent in its coding tool.";

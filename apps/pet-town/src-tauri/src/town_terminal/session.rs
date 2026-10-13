@@ -29,9 +29,10 @@ impl Session {
         rows: u16,
         channel: Channel<TerminalEvent>,
     ) -> Result<Arc<Self>, String> {
+        target.validate_mode(control, takeover)?;
         // The caller validates the target, then serializes spawn/installation with release.
         let mut child = target
-            .stream_command(control, takeover, cols, rows)
+            .stream_command(control, takeover, cols, rows)?
             .spawn()
             .map_err(|_| "Herdr could not open this terminal view. Check its installed version.")?;
         let stdout = child

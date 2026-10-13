@@ -137,6 +137,7 @@ pub(crate) fn query_session(
                 agent.view.source = "herdr".to_string();
                 agent.view.supports_terminal =
                     machine.is_none() && !agent_session_id.starts_with("ephemeral:");
+                agent.view.supports_observe = !agent_session_id.starts_with("ephemeral:");
                 agent.view.remote_machine = machine.as_ref().map(|(_, label)| label.clone());
                 AdapterAgent {
                     owner_key,

@@ -19,6 +19,7 @@ export function visibleTownAgents(snapshot) {
       status,
       source: "mayor",
       supportsTerminal: false,
+      supportsObserve: false,
       remoteMachine: null,
       isMayor: true,
       conversationActive: Boolean(
@@ -42,6 +43,9 @@ export function visibleTownAgents(snapshot) {
         remoteMachine,
         supportsTerminal:
           !remoteMachine && (candidate.supportsTerminal ?? candidate.source === "herdr"),
+        supportsObserve:
+          candidate.supportsObserve ??
+          (!remoteMachine && (candidate.supportsTerminal ?? candidate.source === "herdr")),
         isMayor: false,
         conversationActive: false,
       });

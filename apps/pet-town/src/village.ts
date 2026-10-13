@@ -16,6 +16,7 @@ export interface AgentView {
   label: string;
   source: string;
   supportsTerminal?: boolean;
+  supportsObserve?: boolean;
   remoteMachine?: string | null;
 }
 

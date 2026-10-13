@@ -19,6 +19,9 @@ mod remote_schedule;
 mod state;
 mod terminal;
 mod terminal_api;
+mod terminal_remote;
+#[cfg(all(test, unix))]
+mod terminal_remote_checks;
 mod terminal_socket;
 mod token_activity;
 

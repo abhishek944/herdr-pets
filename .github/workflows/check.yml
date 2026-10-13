@@ -33,6 +33,7 @@ jobs:
           cp "bin/$package/pet-town-pi-runtime.tar.gz" apps/pet-town/src-tauri/resources/
       - run: pnpm run check:flow
       - run: pnpm run check:remote-ui
+      - run: pnpm run check:godot-remote
       - name: Test agent broker at the declared MSRV
         run: cargo +1.88.0 test --locked --manifest-path apps/pet-town/src-tauri/Cargo.toml -p pet-town-agent-broker
       - run: pnpm exec turbo run build internal:build-frontend

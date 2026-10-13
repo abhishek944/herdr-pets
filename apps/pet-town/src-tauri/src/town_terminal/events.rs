@@ -53,7 +53,17 @@ pub(super) fn frame(value: &Value) -> Option<TerminalEvent> {
 
 pub(super) fn closed_state(reason: &str) -> (&'static str, &'static str) {
     let reason = reason.to_ascii_lowercase();
-    if reason.contains("control") || reason.contains("takeover") || reason.contains("attached") {
+    if reason.contains("permission denied") || reason.contains("host key") {
+        ("disconnected", "SSH authentication or host verification failed. Connect to the saved machine in a terminal, then retry Observe.")
+    } else if reason.contains("not found") || reason.contains("not recognized") {
+        (
+            "disconnected",
+            "Herdr must be available on the remote SSH PATH to observe this terminal.",
+        )
+    } else if reason.contains("control")
+        || reason.contains("takeover")
+        || reason.contains("attached")
+    {
         (
             "conflict",
             "Another window controls this terminal. Watch it or deliberately take control.",

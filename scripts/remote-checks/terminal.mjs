@@ -72,6 +72,7 @@ const agents = visibleTownAgents({
       status: "working",
       remoteMachine: "Build",
       supportsTerminal: false,
+      supportsObserve: true,
     },
     { id: "local", source: "herdr", status: "working", supportsTerminal: true },
     { id: "ephemeral", source: "herdr", status: "working", supportsTerminal: false },
@@ -82,28 +83,28 @@ assert.equal(agents.get("remote").remoteMachine, "Build");
 assert.equal(agents.get("legacy").supportsTerminal, true);
 
 const dock = createTerminalDock({ context: {}, controller: {}, bridge: {} });
-// A remote companion keeps its profile (and Select remote pane action) but can never attach.
+// Remote observation is explicit and never grants input or takeover.
 dock.update(agents.get("remote"));
 assert.equal(dock.open, true);
-callbacks.attach(false);
 callbacks.attach(true);
-assert.equal(attachments.length, 0, "remote selection attempted terminal attachment");
-// Local terminal attachment stays explicit and only follows a local, terminal-capable agent.
-dock.update(agents.get("local"));
-assert.equal(dock.open, true);
-assert.equal(attachments.length, 0, "profile attached a terminal without an explicit action");
+assert.equal(attachments.length, 0, "remote input attempted attachment");
 callbacks.attach(false);
 assert.equal(attachments.length, 1);
-assert.equal(attachments[0][0], "local");
+assert.equal(attachments[0][0], "remote");
+assert.equal(attachments[0][2], false);
+// Local observation/control stay explicit and selection releases the prior stream.
 const before = closes;
-dock.update(agents.get("remote"));
-assert.ok(closes > before, "switching to remote did not release the local terminal");
-assert.equal(dock.open, true);
+dock.update(agents.get("local"));
+assert.ok(closes > before);
 callbacks.attach(false);
-assert.equal(attachments.length, 1, "remote selection reused the local terminal session");
+assert.equal(attachments.length, 2);
+assert.equal(attachments[1][0], "local");
+dock.update(agents.get("remote"));
+callbacks.attach(false);
+assert.equal(attachments.length, 3);
 dock.update(agents.get("ephemeral"));
 callbacks.attach(false);
-assert.equal(attachments.length, 1, "agent without terminal support attached");
+assert.equal(attachments.length, 3, "agent without observation support attached");
 dock.update({ id: "mayor", source: "mayor", isMayor: true });
 assert.equal(dock.open, false);
 dock.dispose();
@@ -130,7 +131,10 @@ const { createDockProfile } = await load(
 const profile = createDockProfile({ querySelector: () => ({ after() {} }) });
 profile.render(agents.get("remote"), { firstPerson: false });
 assert.equal(actions.open.textContent, "Select remote pane");
-assert.ok(actions.observe.hidden && actions.interact.hidden, "remote profile offered a terminal");
+assert.ok(
+  !actions.observe.hidden && actions.interact.hidden,
+  "remote profile must offer observation without input",
+);
 assert.match(hint.textContent, /Build/);
 profile.render(agents.get("local"), { firstPerson: false });
 assert.equal(actions.open.textContent, "Open in Herdr ↗");

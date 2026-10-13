@@ -103,7 +103,9 @@ on shutdown. The one-shot `--snapshot` refresh joins all its work before returni
 The existing local focus and macOS panel/main-run-loop flow is preserved. Remote
 server selection does not switch a local TUI's selected machine or activate a
 terminal host. The 3D action therefore says **Select remote pane**, displays the
-manual machine-selection step, and never offers an unsupported embedded terminal.
+manual machine-selection step. Remote companions can use the existing embedded
+Observe flow to watch output without switching the selected Herdr machine.
+Remote observation never grants terminal input or takeover authority.
 The 2D strip keeps that instruction in the pet's hover tooltip and shows only
 errors in the strip without activating a window; progress and successful selection
 do not display popup bubbles. Local pets retain the direct visible-transition

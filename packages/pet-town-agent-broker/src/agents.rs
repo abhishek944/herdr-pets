@@ -13,6 +13,8 @@ pub struct AgentView {
     #[serde(default)]
     pub supports_terminal: bool,
     #[serde(default)]
+    pub supports_observe: bool,
+    #[serde(default)]
     pub remote_machine: Option<String>,
 }
 
@@ -92,6 +94,7 @@ pub(crate) fn parse_agent_list(text: &str) -> Result<Vec<ParsedAgent>, serde_jso
                     source: "unknown".to_string(),
                     token_activity: None,
                     supports_terminal: false,
+                    supports_observe: false,
                     remote_machine: None,
                 },
                 tab_id: agent.tab_id,

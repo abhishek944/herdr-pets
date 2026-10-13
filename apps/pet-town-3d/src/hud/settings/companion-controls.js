@@ -117,7 +117,7 @@ export function bindCompanionControls(root, context) {
           ? "Open in Herdr ↗"
           : "Open agent ↗";
     control("focus").title = selected?.remoteMachine
-      ? `Open Herdr and select “${selected.remoteMachine}” to view the selected pane. Remote terminals are not available in Pet Town.`
+      ? `Open Herdr and select “${selected.remoteMachine}” to view the selected pane. Observe remote output here; use Herdr for input.`
       : "";
     field("remoteHint").hidden = !selected?.remoteMachine;
     field("remoteHint").textContent = control("focus").title;

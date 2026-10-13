@@ -82,3 +82,19 @@ An earlier limited-preview Computer pass covered startup, wildlife petting, move
 ## Native performance ownership
 
 Terrain collision/meshes, source triangle ranges and vegetation instance buffers use versioned content-hashed caches. Release preparation bakes them under the generated `assets/native-prepared/` directory; development also caches them in the native user directory. Authored placements and saved edits remain unchanged. Marine wildlife suspends when distant, asset support reacts to changed terrain columns, weather collision data follows committed world changes, and Battle Mode prepares across loading frames. See [cache contracts, diagnostics and live review](../../docs/native-performance.md).
+
+### Remote companions
+
+The existing companion terminal action offers **Observe** for remote Herdr
+companions. It shows live terminal output through the saved SSH machine and
+session without acquiring input, resize, or takeover authority. Local terminal
+control remains available as before. Herdr must be on the remote SSH PATH, and
+SSH authentication and host-key verification must already work noninteractively.
+Observation currently targets Linux/macOS servers with POSIX SSH shells.
+
+Disconnecting, hiding or closing the town releases the observer. Reconnect stays
+read-only. Removed/disabled machine profiles and changed native agent sessions
+terminate the view instead of redirecting it to a local pane with the same ID.
+
+Run `pnpm run check:godot-remote` to exercise the native Observe action, rendering,
+reconnect, stale-frame rejection, and local input behavior in headless Godot.

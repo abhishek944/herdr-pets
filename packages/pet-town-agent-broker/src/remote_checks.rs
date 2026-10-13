@@ -25,7 +25,7 @@ printf '%s\n' "$*" >> "$0.log"
 if [ "$1 $2 $3" = 'machine list --json' ]; then
     sleep 0.2
     if [ -f "$0.removed" ]; then printf '[]'; exit; fi
-    printf '[{"id":"m1","label":"Build","enabled":true},{"id":"m2","label":"Other","enabled":true},{"id":"offline","label":"Offline","enabled":true},{"id":"disabled","label":"Disabled","enabled":false}]'
+    printf '[{"id":"m1","label":"Build","enabled":true,"target":"build","session":"agents"},{"id":"m2","label":"Other","enabled":true,"target":"other","session":"default"},{"id":"offline","label":"Offline","enabled":true,"target":"offline","session":"default"},{"id":"disabled","label":"Disabled","enabled":false,"target":"disabled","session":"default"}]'
     exit
 fi
 [ "$1" = '--machine' ] || exit 4
