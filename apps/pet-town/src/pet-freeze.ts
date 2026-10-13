@@ -1,3 +1,18 @@
+/**
+ * Dedicated blocked and done loops act in place, so they keep playing unless a real policy asks
+ * for a frozen frame. Pets without accepted sidecar art keep the legacy still frame because their
+ * blocked and done fallbacks are locomotion clips that would otherwise walk in place.
+ */
+export function freezeActivityFrame(
+  frozen: boolean,
+  theme: string,
+  state: string,
+  dedicated: boolean,
+): boolean {
+  if (frozen) return true;
+  return !dedicated && (state === "blocked" || (state === "done" && theme !== "railway"));
+}
+
 export function freezePetFrame(element: HTMLElement): void {
   const image = element.querySelector<HTMLImageElement>("img.pet");
   if (!image || image.hidden || !image.complete || image.naturalWidth === 0) return;

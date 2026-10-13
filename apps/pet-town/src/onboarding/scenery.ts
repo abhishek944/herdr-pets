@@ -1,6 +1,8 @@
 import { RendererRainforest } from "../rainforest";
 import { RendererSnowy } from "../snow";
 import { RendererDesert } from "../desert";
+import { RendererActivities } from "../activity-themes";
+import { isActivityTheme } from "../preferences-types";
 import { createOceanWater, updateOceanWater, advanceOceanWater } from "../ocean-water";
 import "../ocean-water.css";
 import type { PreferencesFile, StripTheme } from "../preferences-types";
@@ -10,6 +12,9 @@ const names: Record<StripTheme, string> = {
   rainforest: "Forest",
   snowy: "Snow",
   desert: "Desert Oasis",
+  rollercoaster: "Rollercoaster",
+  goldmine: "Gold Mine",
+  railway: "Tiny Railway",
 };
 export function renderScenery(
   root: HTMLElement,
@@ -17,7 +22,7 @@ export function renderScenery(
   defaults: PreferencesFile,
 ): void {
   root
-    .querySelectorAll(".rainforest-scene,.snow-scene,.desert-scene,.ocean-water")
+    .querySelectorAll(".rainforest-scene,.snow-scene,.desert-scene,.ocean-water,.activity-scene")
     .forEach((n) => n.remove());
   const prefs = { ...defaults, app: { ...defaults.app, stripTheme: theme } };
   const frozen = root.querySelector<HTMLCanvasElement>("canvas.scene-pet");
@@ -40,6 +45,11 @@ export function renderScenery(
           : null;
   if (Scenery) {
     const scenery = new Scenery(root);
+    scenery.setPreferences(prefs);
+    scenery.advance(0, true, true);
+  }
+  if (isActivityTheme(theme)) {
+    const scenery = new RendererActivities(root);
     scenery.setPreferences(prefs);
     scenery.advance(0, true, true);
   }

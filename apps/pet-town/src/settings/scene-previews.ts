@@ -5,6 +5,7 @@ import { byId } from "../settings-dom";
 import { SettingsRainforest } from "../settings-rainforest";
 import { SettingsSnow } from "../settings-snow";
 import { SettingsDesert } from "../settings-desert";
+import { SettingsActivities } from "../settings-activities";
 
 export class SettingsScenePreviews {
   private readonly oceanPreview = byId<HTMLElement>("ocean-preview");
@@ -12,11 +13,13 @@ export class SettingsScenePreviews {
   private readonly rainforestSettings: SettingsRainforest;
   private readonly snowSettings: SettingsSnow;
   private readonly desertSettings: SettingsDesert;
+  private readonly activitySettings: SettingsActivities;
 
   constructor(draft: () => PreferencesFile, render: () => void) {
     this.rainforestSettings = new SettingsRainforest(draft, render);
     this.snowSettings = new SettingsSnow(draft, render);
     this.desertSettings = new SettingsDesert(draft, render);
+    this.activitySettings = new SettingsActivities(draft, render);
   }
 
   start(): void {
@@ -34,6 +37,7 @@ export class SettingsScenePreviews {
     this.rainforestSettings.render(draft, readOnly);
     this.snowSettings.render(draft, readOnly);
     this.desertSettings.render(draft, readOnly);
+    this.activitySettings.render(draft, readOnly);
     const waterlineSlider = byId<HTMLInputElement>("ocean-waterline");
     waterlineSlider.value = String(draft.app.oceanWaterlineHeightPx);
     waterlineSlider.disabled = readOnly || draft.app.stripTheme !== "ocean";

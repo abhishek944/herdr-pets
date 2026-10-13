@@ -3,6 +3,18 @@
 
 fn main() {
     let arguments: Vec<String> = std::env::args().collect();
+    #[cfg(unix)]
+    if arguments.iter().any(|argument| argument == "--open-town") {
+        if arguments.len() != 2 {
+            eprintln!("usage: pet-town --open-town");
+            std::process::exit(2);
+        }
+        if let Err(message) = pet_town_lib::open_town_from_cli() {
+            eprintln!("{message}");
+            std::process::exit(2);
+        }
+        return;
+    }
     if arguments
         .iter()
         .any(|argument| argument == "--onboarding-herdr")

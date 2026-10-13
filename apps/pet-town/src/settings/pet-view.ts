@@ -2,6 +2,7 @@ import { characterDisplayName } from "../character-packs";
 import { effectivePetTheme, oceanRowingUrl } from "../ocean-assets";
 import {
   friendlyPetName,
+  isActivityTheme,
   type PreferencesFile,
   type PreferencesSnapshot,
 } from "../preferences-types";
@@ -36,8 +37,9 @@ export function renderPetControls(
   const selectedTheme = effectivePetTheme(draft, selectedPetId);
   themeSelect.value = selectedTheme;
   themeSelect.querySelector<HTMLOptionElement>('option[value="ocean"]')!.disabled = !hasOceanArt;
-  byId<HTMLElement>("pet-theme-hint").textContent =
-    draft.app.stripTheme === "snowy"
+  byId<HTMLElement>("pet-theme-hint").textContent = isActivityTheme(draft.app.stripTheme)
+    ? "The App activity theme adds props to Standard pet art. Switch App to Standard for individual Ocean choices."
+    : draft.app.stripTheme === "snowy"
       ? "App Snowy uses Standard assets for every pet. Switch App to Standard for individual Ocean choices."
       : draft.app.stripTheme === "desert"
         ? "App Desert Oasis uses Standard assets for every pet. Switch App to Standard for individual Ocean choices."
@@ -61,5 +63,6 @@ export function renderPetControls(
     draft.app.stripTheme === "ocean" ||
     draft.app.stripTheme === "rainforest" ||
     draft.app.stripTheme === "snowy" ||
-    draft.app.stripTheme === "desert";
+    draft.app.stripTheme === "desert" ||
+    isActivityTheme(draft.app.stripTheme);
 }

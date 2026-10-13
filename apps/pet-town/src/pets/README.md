@@ -1,6 +1,6 @@
 # Bundled 2D pets
 
-Each folder contains a `flow.json` plus the animated WebP files that its states reference. The folder name and `flow.json` ID must match. The build discovers these folders automatically. User pets are stored privately by Pet Studio and use the same state format.
+Each folder contains a `flow.json` plus the animated WebP files that its states reference, and may add its own activity artwork. The folder name and `flow.json` ID must match. The build discovers these folders automatically. User pets are stored privately by Pet Studio and use the same state format.
 
 Every pet maps each agent state to a WebP animation and one on-screen action: `idle` or `walking`. `idle` keeps the pet in place; `walking` moves it horizontally. Set `visible: false` for hidden states. The Mayor can also use `listening` and `speaking` states; regular agents never use them. The current app fixes the Mayor to Knight, so other pets' voice artwork is available in Settings previews, not live Mayor use. See [the behavior pack format](../../../../docs/behavior-packs.md) for an example.
 
@@ -9,6 +9,26 @@ Every pet maps each agent state to a WebP animation and one on-screen action: `i
 There are 30 bundled pets: ten KayKit pets and twenty restored original pets. The original PNGs were recovered unchanged from the revision before commit `1caaa1d`. Their old multi-step flows now use the current single-animation state mappings: Running uses the first movement clip, Blocked uses the first blocked clip, and Completed uses Sleep. Idle and Unknown stay hidden. In Standard, Listening and Speaking reuse the Blocked animation; Ocean has dedicated voice artwork. All original clips, including Wave and work animations, remain available in Settings even though right-click animation actions are retired.
 
 The restored pets are Bao Panda Chef, Bigfoot Yeti, Brassbell Automaton Porter, Cat, Dog, Ember Fox Ronin, Fern Potted Plant, Gus Mail Carrier, Human Male, Jun Clockwork Apprentice, Kip Penguin Postman, Mira Dune Spear Scout, Mossback Turtle Monk, Nib Dragon Hatchling, Pebble Slime Knight, Pudge Hedgehog, Skiff Raccoon Sky Pirate, Sol Capybara, Viking, and Wisp Little Ghost.
+
+## Activity artwork
+
+A bundled folder may publish the nine Pet Street action loops for Rollercoaster, Gold Mine and Tiny Railway. Each loop is `activity-<theme>-<state>.webp` for the `working`, `blocked` and `done` states, and `activity.json` describes them:
+
+```json
+{
+  "formatVersion": 1,
+  "clips": {
+    "rollercoaster-working": {
+      "asset": "activity-rollercoaster-working.webp",
+      "durationMs": 960,
+      "scale": 1.3,
+      "anchorNormalized": [0.311, 0.6997]
+    }
+  }
+}
+```
+
+The sidecar must contain exactly those nine keys. `durationMs` equals the encoded loop duration, `scale` is the canvas width relative to the shared 44px citizen size, and `anchorNormalized` is the measured support pixel in the full square canvas: hips/seat for Rollercoaster, feet or grounded-knee support for Gold Mine and Tiny Railway. The build validates every entry and URL at build time; the runtime aligns the sprite on the theme support line through the anchor, plays the loop in place, and omits the detached pickaxe or wrench prop when the sprite already holds it. Missing or invalid metadata falls back to the state clips. Installed Pet Studio extensions keep their own clips and state assignments.
 
 ## Ocean and KayKit artwork
 

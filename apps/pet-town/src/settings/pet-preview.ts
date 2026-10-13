@@ -1,6 +1,11 @@
 import type { HerdrState } from "../flow-types";
 import { effectivePetTheme } from "../ocean-assets";
-import { motionFactor, type PetPreferences, type PreferencesFile } from "../preferences-types";
+import {
+  isActivityTheme,
+  motionFactor,
+  type PetPreferences,
+  type PreferencesFile,
+} from "../preferences-types";
 import { byId } from "../settings-dom";
 import { selectedPreviewAnimationId, type PreviewAnimationOption } from "../settings-preview";
 import { configurePetPreview } from "../settings-state-map";
@@ -35,8 +40,8 @@ export class SettingsPetPreview {
         this.render();
       },
       this.editState,
-      draft.app.stripTheme === "snowy" || draft.app.stripTheme === "desert"
-        ? "standard"
+      isActivityTheme(draft.app.stripTheme)
+        ? draft.app.stripTheme
         : effectivePetTheme(draft, selectedPetId),
     );
     this.selectedAnimationId = selectedPreviewAnimationId(

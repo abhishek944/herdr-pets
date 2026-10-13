@@ -1,9 +1,19 @@
 import type { FlowSample } from "./flow-runtime";
+import { activityPresentationFor } from "./activity-pet";
 import type { CitizenState } from "./village";
 import { syncCitizenVisibility } from "./renderer-visibility";
-import { refreshCitizenLabelPosition, visibleBoundsRatios } from "./renderer-image-bounds";
+import { refreshCitizenLabelPosition as refreshSpriteBounds, visibleBoundsRatios } from "./renderer-image-bounds";
 export { setPreferenceHidden } from "./renderer-visibility";
-export { refreshCitizenLabelPosition } from "./renderer-image-bounds";
+export function refreshCitizenLabelPosition(element: HTMLElement): void {
+  refreshSpriteBounds(element);
+  if (element.dataset.activityTheme !== "rollercoaster" || element.hidden) return;
+  const stack = element.querySelector<HTMLElement>(".pet-stack");
+  const label = element.querySelector<HTMLElement>(".project");
+  if (!stack || !label) return;
+  // Cache layout-only distance from the citizen bottom, unaffected by label transforms.
+  element.style.setProperty("--coaster-label-rise",
+    `${element.offsetHeight - stack.offsetTop - label.offsetTop}px`);
+}
 
 export interface HitRegion {
   x: number;
@@ -70,13 +80,12 @@ export function updateCitizenElement(element: HTMLElement, citizen: CitizenState
   if (project && project.textContent !== citizen.label) project.textContent = citizen.label;
 }
 
-function applyPetPresentation(pet: HTMLImageElement, sample: FlowSample): void {
-  const clip = sample.clip;
+function applyPetPresentation(pet: HTMLImageElement, sample: FlowSample, clip = sample.clip, dedicated = false): void {
   const className = [
     "pet",
     clip?.mirror ? "clip-mirror-safe" : "clip-fixed-facing",
     clip?.sourceFacing === "left" ? "clip-source-left" : "clip-source-right",
-    sample.moving ? "flow-moving" : "flow-stationary",
+    !dedicated && sample.moving ? "flow-moving" : "flow-stationary",
     sample.failed ? "flow-failed" : "",
   ].filter(Boolean).join(" ");
   if (pet.className !== className) pet.className = className;
@@ -105,10 +114,13 @@ export function applyFlowSample(
   }
 
   const clip = sample.clip;
+  const presentation = activityPresentationFor(element, themedAssetUrl);
+  const presentationClip = presentation ?? clip;
+  const dedicated = presentation?.name === `activity:${element.parentElement?.dataset.stripTheme}:${element.dataset.status}`;
   const assetUrl = themedAssetUrl ?? (sample.held ? clip?.holdAssetUrl : clip?.assetUrl)
     ?? clip?.assetUrl
     ?? fallbackAssetUrl;
-  const assetKey = JSON.stringify([assetUrl, sample.clipEpoch, sample.held]);
+  const assetKey = JSON.stringify(dedicated ? [assetUrl] : [assetUrl, sample.clipEpoch, sample.held]);
   if (pet.dataset.assetKey !== assetKey) {
     const request = String((Number(pet.dataset.assetRequest) || 0) + 1);
     const hasVisibleAsset = Boolean(pet.getAttribute("src")) && !pet.hidden;
@@ -126,7 +138,7 @@ export function applyFlowSample(
       void loader.decode().then(() => {
         globalThis.clearTimeout(releaseTimer);
         if (pet.dataset.assetRequest !== request) return;
-        applyPetPresentation(pet, sample);
+        applyPetPresentation(pet, sample, presentationClip, dedicated);
         pet.removeAttribute("src");
         pet.src = assetUrl;
         pet.hidden = false;
@@ -150,7 +162,7 @@ export function applyFlowSample(
         syncCitizenVisibility(element, pet, onGeometryChange);
       });
     } else {
-      applyPetPresentation(pet, sample);
+      applyPetPresentation(pet, sample, presentationClip, dedicated);
       pet.hidden = true;
       pet.removeAttribute("src");
       delete pet.dataset.visibleTopRatio;
@@ -160,7 +172,7 @@ export function applyFlowSample(
       syncCitizenVisibility(element, pet, onGeometryChange);
     }
   } else if (pet.dataset.assetReadyKey === assetKey) {
-    applyPetPresentation(pet, sample);
+    applyPetPresentation(pet, sample, presentationClip, dedicated);
     syncCitizenVisibility(element, pet, onGeometryChange);
   }
   return pet.dataset.assetReadyKey === assetKey || pet.dataset.assetReleasedKey === assetKey;

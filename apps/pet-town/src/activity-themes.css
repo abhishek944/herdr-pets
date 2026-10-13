@@ -1,0 +1,126 @@
+.activity-scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.activity-scene[hidden] {
+  display: none;
+}
+.activity-scene > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  transform: scaleY(var(--coaster-height-scale, 1));
+  transform-origin: center bottom;
+}
+.activity-preview {
+  position: relative;
+  height: 178px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #35393e, #4b5158);
+  border-radius: 10px;
+}
+.activity-preview-copy {
+  padding: 10px 12px;
+  color: #e5f4f5;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.activity-preview-copy > div {
+  position: absolute;
+  bottom: 12px;
+  padding: 4px 8px;
+  border: 1px solid #ffffff35;
+  border-radius: 5px;
+}
+.activity-props {
+  position: absolute;
+  z-index: 3;
+  bottom: 0;
+  left: 0;
+  width: 104px;
+  height: 100px;
+  pointer-events: none;
+  opacity: var(--citizen-opacity, 1);
+  transform: scale(var(--activity-scale, 1));
+  transform-origin: 52px 90px;
+}
+.activity-props > svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.citizen[data-activity-theme] .shadow {
+  display: none;
+}
+.citizen[data-activity-theme] .project {
+  max-width: 240px;
+  line-height: 1.2;
+  font-size: calc(11px * var(--label-scale, 1));
+  padding: 4px 8px;
+}
+.activity-name {
+  order: -1;
+  color: #eef3f4;
+  max-width: 104px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: var(--citizen-opacity, 1);
+  font-size: calc(9px * var(--label-scale, 1));
+  white-space: nowrap;
+  text-shadow: 0 1px 3px #000;
+  pointer-events: none;
+}
+.citizen[data-label-visibility="hidden"] .activity-name {
+  display: none;
+}
+.citizen[data-label-visibility="hover"] .activity-name,
+.citizen[data-label-overlap-hidden="true"] .activity-name {
+  visibility: hidden;
+}
+.citizen:hover .activity-name {
+  visibility: visible;
+}
+.citizen[data-activity-theme="goldmine"] .activity-props {
+  bottom: -2px;
+}
+.citizen[data-activity-theme="goldmine"] .project {
+  transform: translateY(calc(var(--label-offset-y, 0px) - 18px * var(--activity-scale, 1)));
+}
+.citizen[data-activity-theme="rollercoaster"] .pet-stack {
+  bottom: calc(10px + 15px * var(--activity-scale, 1) - var(--foot-offset-y, 0px));
+  gap: 3px;
+}
+.citizen[data-activity-theme="rollercoaster"] .project {
+  order: -2;
+}
+.citizen[data-activity-theme="rollercoaster"] .project,
+.citizen[data-activity-theme="rollercoaster"] .activity-name {
+  transform: translateY(
+    max(0px, calc(2px + var(--coaster-label-rise, 0px) - var(--coaster-citizen-bottom-y, 100vh)))
+  );
+}
+/*
+ * The approved 25% Railway machine keeps the wheel floor at y90 but moves the deck top from y61 to
+ * y82.75, so pets without accepted sidecar art rest on that derived deck support instead of
+ * floating above the shrunken trolley.
+ */
+.citizen[data-activity-theme="railway"] .pet-stack {
+  bottom: calc(10px + 5.75px * var(--activity-scale, 1) - var(--foot-offset-y, 0px));
+}
+
+/*
+ * Dedicated action loops align their measured support anchor with the theme support line and the
+ * scene centre. Only the sprite moves, so the shared stack, labels and prop frame keep the
+ * approved geometry; the frozen frame follows the same offset for paused rendering.
+ */
+.citizen[data-activity-anchor="true"] img.pet {
+  translate: calc(var(--activity-sprite-offset-x, 0) * var(--activity-scale, 1) * 1px)
+    calc(var(--activity-sprite-offset-y, 0) * var(--activity-scale, 1) * 1px);
+}
+.citizen[data-activity-anchor="true"] .pet-stack > .pet-freeze {
+  translate: calc(-50% + var(--activity-sprite-offset-x, 0) * var(--activity-scale, 1) * 1px)
+    calc(var(--activity-sprite-offset-y, 0) * var(--activity-scale, 1) * 1px);
+}

@@ -41,6 +41,8 @@ mod sessions;
 mod settings_window;
 mod settings_window_lifecycle;
 mod town_commands;
+#[cfg(unix)]
+mod town_launch_cli;
 mod town_process;
 mod town_snapshot;
 mod town_terminal;
@@ -53,6 +55,9 @@ pub use adapter_setup::{configure_adapter, setups_json};
 pub use agents::{AgentSnapshot, AgentView};
 pub use preferences_commands::startup_enabled_from_disk;
 pub use sessions::snapshot_json;
+
+#[cfg(unix)]
+pub use town_launch_cli::open as open_town_from_cli;
 
 pub fn open_onboarding_herdr_from_cli() -> Result<(), String> {
     onboarding::herdr_handoff_from_cli()
@@ -116,6 +121,10 @@ pub fn run() {
             window::configure_window(app)?;
             onboarding::window::start(app.handle());
             control::start(app.handle().clone());
+            #[cfg(unix)]
+            if let Err(error) = town_launch_cli::start(app.handle()) {
+                eprintln!("Pet Town launch command unavailable: {error}");
+            }
             app_updates::start(app.handle().clone());
             #[cfg(target_os = "macos")]
             global_mayor_shortcut::start();

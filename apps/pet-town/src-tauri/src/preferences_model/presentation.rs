@@ -55,6 +55,19 @@ pub enum StripTheme {
     Rainforest,
     Snowy,
     Desert,
+    Rollercoaster,
+    Goldmine,
+    Railway,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum CoasterMode {
+    #[default]
+    LowRolling,
+    TwilightCarnival,
+    FireflyGardens,
+    Cloudline,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]

@@ -1,7 +1,19 @@
 export const ASSISTANT_PET_ID = "knight";
 
 export type SettingsAppearance = "system" | "light" | "dark";
-export type StripTheme = "standard" | "ocean" | "rainforest" | "snowy" | "desert";
+export type StripTheme =
+  | "standard"
+  | "ocean"
+  | "rainforest"
+  | "snowy"
+  | "desert"
+  | "rollercoaster"
+  | "goldmine"
+  | "railway";
+export type CoasterMode = "low-rolling" | "twilight-carnival" | "firefly-gardens" | "cloudline";
+export function isActivityTheme(theme: string | undefined): boolean {
+  return theme === "rollercoaster" || theme === "goldmine" || theme === "railway";
+}
 export type PetTheme = "standard" | "ocean";
 export type RainforestMode = "after-rain" | "firefly";
 export type SnowMode = "fresh-snow" | "aurora-night";
@@ -14,6 +26,10 @@ export interface AppPreferences {
   openWithHerdr: boolean;
   settingsAppearance: SettingsAppearance;
   stripTheme: StripTheme;
+  coasterMode: CoasterMode;
+  coasterHeightPx: number;
+  goldmineOpacityPercent: number;
+  railwayOpacityPercent: number;
   rainforestMode: RainforestMode;
   rainforestOpacityPercent: number;
   snowMode: SnowMode;

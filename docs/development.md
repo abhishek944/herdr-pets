@@ -87,6 +87,35 @@ continues to use `pet-town-public`. See the
 Start the landing page at `http://127.0.0.1:4173` with `pnpm run dev:web`.
 Type-check and lint commands still use Turbo.
 
+## Open the native town from automation
+
+Use the launch-only command instead of targeting the app menu:
+
+```bash
+# Installed app
+"/Applications/Pet Town.app/Contents/MacOS/pet-town" --open-town
+
+# This checkout, after pnpm run dev has built the updated app
+"apps/pet-town/src-tauri/target/debug/Pet Town Debug.app/Contents/MacOS/pet-town" --open-town
+```
+
+The command forwards to the running desktop, or starts that executable when no
+updated desktop is running. The desktop uses the same native launch/focus owner
+as **Open Pet Town**, preserving live companions and the authenticated bridge.
+Repeated calls reuse the owned game process. Restart an older desktop before
+using the new command; its singleton lock cannot accept launch requests.
+
+A successful command exits zero and prints JSON with `ok: true` and
+`status: "launch-dispatched"`. This confirms launch/focus dispatch, **not** that
+loading has finished or that the game is visibly foreground. Automation must
+verify the actual game window and fresh frames separately. Errors exit with
+code 2; after a reply timeout, inspect the game before retrying because the
+request may already have run.
+
+The Unix-only command uses a same-user socket inside a private launch-control
+directory. It exposes only town opening; it does not permit arbitrary actions,
+terminal input, microphone capture or bypassing macOS permissions.
+
 ## Link for local development
 
 While working on this repository, link the working tree instead of installing

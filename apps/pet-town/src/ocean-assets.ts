@@ -34,7 +34,9 @@ export function oceanStateUrl(petId: string, state: HerdrState): string | null {
 
 export function effectivePetTheme(preferences: PreferencesFile | null, petId: string): PetTheme {
   if (
-    ["rainforest", "snowy", "desert"].includes(preferences?.app.stripTheme ?? "") ||
+    ["rainforest", "snowy", "desert", "rollercoaster", "goldmine", "railway"].includes(
+      preferences?.app.stripTheme ?? "",
+    ) ||
     !oceanRowingUrl(petId)
   )
     return "standard";

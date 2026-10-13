@@ -79,17 +79,18 @@
   left: 117px;
   right: 117px;
   top: 495px;
-  display: flex;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 6px;
 }
 .step-2 .theme-choice {
-  width: 121px;
+  min-width: 0;
   border: 1px solid #d5dfd1;
   border-radius: 9px;
-  padding: 10px;
+  padding: 6px;
   background: #fffaf0;
   color: #63766e;
-  font-size: 11px;
+  font-size: 10px;
   cursor: pointer;
 }
 .step-2 .theme-choice[aria-pressed="true"] {

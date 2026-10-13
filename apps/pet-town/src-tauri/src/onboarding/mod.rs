@@ -63,14 +63,15 @@ impl Onboarding {
     fn context(&self, app: &AppHandle) -> Context {
         let progress = self.store.get();
         let runtime = self.runtime();
-        let theme = app
+        let saved = app
             .state::<crate::preferences::PreferencesStore>()
             .snapshot()
             .preferences
-            .app
-            .strip_theme;
+            .app;
+        let theme = saved.strip_theme;
         let mut preview_preferences = crate::preferences_model::PreferencesFile::defaults(&[]);
         preview_preferences.app.strip_theme = theme.clone();
+        preview_preferences.app.coaster_mode = saved.coaster_mode;
         let mut sample = runtime.sample.clone();
         if progress.own_baseline.is_some() && sample.phase == "idle" {
             sample.phase = "own".into();

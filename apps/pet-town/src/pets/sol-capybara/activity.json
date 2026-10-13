@@ -1,0 +1,86 @@
+{
+  "formatVersion": 1,
+  "clips": {
+    "rollercoaster-working": {
+      "asset": "activity-rollercoaster-working.webp",
+      "durationMs": 960,
+      "scale": 1.1504,
+      "anchorNormalized": [
+        0.332,
+        0.9277
+      ]
+    },
+    "rollercoaster-blocked": {
+      "asset": "activity-rollercoaster-blocked.webp",
+      "durationMs": 1440,
+      "scale": 1.2866,
+      "anchorNormalized": [
+        0.3486,
+        0.9375
+      ]
+    },
+    "rollercoaster-done": {
+      "asset": "activity-rollercoaster-done.webp",
+      "durationMs": 1200,
+      "scale": 1.2614,
+      "anchorNormalized": [
+        0.4043,
+        0.9297
+      ]
+    },
+    "goldmine-working": {
+      "asset": "activity-goldmine-working.webp",
+      "durationMs": 960,
+      "scale": 1.2371,
+      "anchorNormalized": [
+        0.4609,
+        0.9434
+      ]
+    },
+    "goldmine-blocked": {
+      "asset": "activity-goldmine-blocked.webp",
+      "durationMs": 960,
+      "scale": 0.9724,
+      "anchorNormalized": [
+        0.3799,
+        0.9219
+      ]
+    },
+    "goldmine-done": {
+      "asset": "activity-goldmine-done.webp",
+      "durationMs": 960,
+      "scale": 1.2576,
+      "anchorNormalized": [
+        0.332,
+        0.9336
+      ]
+    },
+    "railway-working": {
+      "asset": "activity-railway-working.webp",
+      "durationMs": 960,
+      "scale": 1.0507,
+      "anchorNormalized": [
+        0.3447,
+        0.9121
+      ]
+    },
+    "railway-blocked": {
+      "asset": "activity-railway-blocked.webp",
+      "durationMs": 1200,
+      "scale": 1.271,
+      "anchorNormalized": [
+        0.4697,
+        0.9434
+      ]
+    },
+    "railway-done": {
+      "asset": "activity-railway-done.webp",
+      "durationMs": 1200,
+      "scale": 1.3621,
+      "anchorNormalized": [
+        0.5166,
+        0.9434
+      ]
+    }
+  }
+}

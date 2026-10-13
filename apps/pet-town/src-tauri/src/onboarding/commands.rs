@@ -59,10 +59,9 @@ pub(crate) fn set_onboarding_appearance(
     let _update_admission = updates.window_opening()?;
     let _operation = state.begin()?;
     let theme = match theme.as_str() {
-        "standard" | "ocean" | "rainforest" | "snowy" | "desert" => {
-            serde_json::from_value(serde_json::Value::String(theme))
-                .map_err(|_| "Unsupported scenery.")?
-        }
+        "standard" | "ocean" | "rainforest" | "snowy" | "desert" | "rollercoaster" | "goldmine"
+        | "railway" => serde_json::from_value(serde_json::Value::String(theme))
+            .map_err(|_| "Unsupported scenery.")?,
         _ => return Err("Choose one of the available desktop looks.".into()),
     };
     let store = app.state::<crate::preferences::PreferencesStore>();

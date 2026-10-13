@@ -93,6 +93,11 @@
 }
 .ocean-preview[hidden],
 #rainforest-mode-row[hidden],
+#coaster-mode-row[hidden],
+#coaster-height-row[hidden],
+#goldmine-opacity-row[hidden],
+#railway-opacity-row[hidden],
+.activity-preview[hidden],
 #ocean-opacity-row[hidden],
 #ocean-waterline-row[hidden],
 .wave-controls-heading[hidden] {

@@ -1,9 +1,11 @@
 mod presentation;
+mod scenery;
+pub use scenery::*;
 
 pub use presentation::{
-    AppearancePreferences, DesertMode, DesertScene, LabelPreferences, LabelVisibility, MotionLevel,
-    MotionPreferences, PetPreferences, PetTheme, RainforestMode, SettingsAppearance, SnowMode,
-    StripTheme,
+    AppearancePreferences, CoasterMode, DesertMode, DesertScene, LabelPreferences, LabelVisibility,
+    MotionLevel, MotionPreferences, PetPreferences, PetTheme, RainforestMode, SettingsAppearance,
+    SnowMode, StripTheme,
 };
 
 use serde::{Deserialize, Serialize};
@@ -12,26 +14,6 @@ use std::collections::BTreeMap;
 pub const SCHEMA_VERSION: u32 = 3;
 pub const ASSISTANT_PET_ID: &str = "knight";
 pub const COMPLETED_HIDE_DELAYS_MINUTES: [u16; 5] = [1, 5, 15, 30, 60];
-
-pub fn default_rainforest_opacity_percent() -> u8 {
-    36
-}
-
-pub fn default_snow_opacity_percent() -> u8 {
-    36
-}
-
-pub fn default_desert_opacity_percent() -> u8 {
-    36
-}
-
-pub fn default_ocean_opacity_percent() -> u8 {
-    36
-}
-
-pub fn default_ocean_waterline_height_px() -> u16 {
-    88
-}
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -48,6 +30,14 @@ pub struct AppPreferences {
     pub settings_appearance: SettingsAppearance,
     #[serde(default)]
     pub strip_theme: StripTheme,
+    #[serde(default)]
+    pub coaster_mode: CoasterMode,
+    #[serde(default = "default_coaster_height_px")]
+    pub coaster_height_px: u16,
+    #[serde(default = "default_activity_opacity_percent")]
+    pub goldmine_opacity_percent: u8,
+    #[serde(default = "default_activity_opacity_percent")]
+    pub railway_opacity_percent: u8,
     #[serde(default)]
     pub rainforest_mode: RainforestMode,
     #[serde(default = "default_rainforest_opacity_percent")]
@@ -122,6 +112,10 @@ impl PreferencesFile {
                 open_with_herdr: true,
                 settings_appearance: SettingsAppearance::System,
                 strip_theme: StripTheme::Standard,
+                coaster_mode: CoasterMode::LowRolling,
+                coaster_height_px: default_coaster_height_px(),
+                goldmine_opacity_percent: default_activity_opacity_percent(),
+                railway_opacity_percent: default_activity_opacity_percent(),
                 rainforest_mode: RainforestMode::AfterRain,
                 rainforest_opacity_percent: default_rainforest_opacity_percent(),
                 snow_mode: SnowMode::FreshSnow,

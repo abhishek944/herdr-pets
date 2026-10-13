@@ -1,0 +1,86 @@
+{
+  "formatVersion": 1,
+  "clips": {
+    "rollercoaster-working": {
+      "asset": "activity-rollercoaster-working.webp",
+      "durationMs": 960,
+      "scale": 1.3001096090610158,
+      "anchorNormalized": [
+        0.311067157769556,
+        0.6996824415467626
+      ]
+    },
+    "rollercoaster-blocked": {
+      "asset": "activity-rollercoaster-blocked.webp",
+      "durationMs": 1440,
+      "scale": 1.0807382933579504,
+      "anchorNormalized": [
+        0.2794237012987013,
+        0.6126195170700086
+      ]
+    },
+    "rollercoaster-done": {
+      "asset": "activity-rollercoaster-done.webp",
+      "durationMs": 1200,
+      "scale": 1.1175457567383555,
+      "anchorNormalized": [
+        0.2869625410202864,
+        0.6528633887614679
+      ]
+    },
+    "goldmine-working": {
+      "asset": "activity-goldmine-working.webp",
+      "durationMs": 960,
+      "scale": 1.0,
+      "anchorNormalized": [
+        0.5,
+        0.9375
+      ]
+    },
+    "goldmine-blocked": {
+      "asset": "activity-goldmine-blocked.webp",
+      "durationMs": 960,
+      "scale": 0.8136363636363636,
+      "anchorNormalized": [
+        0.4999999999999994,
+        0.9375000000000001
+      ]
+    },
+    "goldmine-done": {
+      "asset": "activity-goldmine-done.webp",
+      "durationMs": 960,
+      "scale": 1.0,
+      "anchorNormalized": [
+        0.5,
+        0.9375
+      ]
+    },
+    "railway-working": {
+      "asset": "activity-railway-working.webp",
+      "durationMs": 960,
+      "scale": 0.859090909090909,
+      "anchorNormalized": [
+        0.49999999999999944,
+        0.9375000000000001
+      ]
+    },
+    "railway-blocked": {
+      "asset": "activity-railway-blocked.webp",
+      "durationMs": 1200,
+      "scale": 1.0,
+      "anchorNormalized": [
+        0.5,
+        0.9375
+      ]
+    },
+    "railway-done": {
+      "asset": "activity-railway-done.webp",
+      "durationMs": 1200,
+      "scale": 1.0,
+      "anchorNormalized": [
+        0.5,
+        0.9375
+      ]
+    }
+  }
+}

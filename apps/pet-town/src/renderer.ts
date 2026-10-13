@@ -117,7 +117,7 @@ export class VillageRenderer {
             sample: currentSample,
           };
       motion.pendingElapsedMs = advance.remainingMs;
-      const distance = travelDistanceFor(element, tokenMotionDistance(motion.tokenMotion, advance.distancePx, element.dataset.status === "working", elapsedMs), this.preferences, this.systemReducedMotion);
+      const distance = this.scenery.travelDistance(travelDistanceFor(element, tokenMotionDistance(motion.tokenMotion, advance.distancePx, element.dataset.status === "working", elapsedMs), this.preferences, this.systemReducedMotion), element);
       const position = advanceTrack(motion.x, motion.direction, distance, motion.maximumX);
       motion.x = position.x;
       motion.direction = position.direction;

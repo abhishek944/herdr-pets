@@ -1,4 +1,5 @@
 import { behaviorPackForCharacter } from "./character-packs";
+import { activityClipFor, activityPoseFor } from "./activity-pet";
 import { PET_STATES, type HerdrState } from "./flow-types";
 import { oceanClipName, oceanRowingUrl, oceanStateUrl } from "./ocean-assets";
 import type { StripTheme } from "./preferences-types";
@@ -28,7 +29,18 @@ export function configurePetPreview(
           : [];
       })
     : previewAnimations(behaviorPackForCharacter(petId));
-  renderStateMap(petId, onStatePreview, onEditState, options, oceanUrl !== null);
+  for (const state of PET_STATES) {
+    const pose = activityPoseFor(theme, petId, state);
+    if (!pose?.assetUrl || options.some((item) => item.id === `clip:${pose.name}`)) continue;
+    options.push({
+      id: `clip:${pose.name}`,
+      label: `Activity ${state}`,
+      assetUrl: pose.assetUrl,
+      scale: pose.scale,
+      locomotion: false,
+    });
+  }
+  renderStateMap(petId, onStatePreview, onEditState, options, oceanUrl !== null, theme);
   return options;
 }
 
@@ -38,6 +50,7 @@ export function renderStateMap(
   edit: (petId: string, state: HerdrState, file: File) => void,
   options: readonly PreviewAnimationOption[] = [],
   ocean = false,
+  theme: StripTheme = "standard",
 ): void {
   const pack = behaviorPackForCharacter(petId);
   const states: readonly HerdrState[] = PET_STATES;
@@ -64,15 +77,20 @@ export function renderStateMap(
       const name = document.createElement("strong");
       name.textContent = labels[state];
       const action = document.createElement("small");
-      action.textContent = `Action: ${assignment.action === "walking" ? "Walking" : "Idle"}`;
+      const stationary =
+        theme === "goldmine" ||
+        theme === "railway" ||
+        (theme === "rollercoaster" && (state === "blocked" || state === "done"));
+      const presentationAction = stationary ? "idle" : assignment.action;
+      action.textContent = `Action: ${presentationAction === "walking" ? "Walking" : "Idle"}`;
       const heading = document.createElement("span");
       heading.className = "state-heading";
       heading.append(name, action);
       previewButton.append(heading);
-      const clipName = ocean ? oceanClipName(state) : assignment.animation;
-      const displayName = ocean
-        ? `Ocean ${state === "working" ? "rowing" : state}`
-        : assignment.animation;
+      const clipName = ocean
+        ? oceanClipName(state)
+        : (activityClipFor(theme, petId, state) ?? assignment.animation);
+      const displayName = ocean ? `Ocean ${state === "working" ? "rowing" : state}` : clipName;
       if (assigned) {
         const assetUrl = options.find((item) => item.id === `clip:${clipName}`)?.assetUrl;
         if (assetUrl) {
@@ -97,7 +115,7 @@ export function renderStateMap(
         assigned ? `Preview ${labels[state]}: ${displayName}` : `${labels[state]} is hidden`,
       );
       previewButton.addEventListener("click", () => {
-        if (assigned && clipName) preview(clipName, assignment.action);
+        if (assigned && clipName) preview(clipName, presentationAction);
       });
       const editButton = document.createElement("button");
       editButton.type = "button";
