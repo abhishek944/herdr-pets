@@ -104,3 +104,8 @@ native session ID, it binds to the reported terminal ID and revalidates it befor
 attachment and during observation. A replaced terminal or a newly reported
 native session ends that view; reconnect uses the current companion. This
 fallback follows terminal output across harness runs and never enables input.
+
+Fallback public companion IDs include the terminal ID, so requests for a replaced
+terminal cannot select its replacement. Native terminal-open requests allow
+30 seconds for remote discovery and validation; ordinary requests retain their
+8-second deadline.

@@ -18,10 +18,13 @@ pub fn terminal_target(id: &str) -> Result<TerminalTarget, String> {
         return Err("Choose a current Herdr companion.".into());
     }
     let binary = herdr::binary();
-    let route = crate::collect()
-        .focus_routes
-        .remove(id)
-        .or_else(|| crate::remote_route::resolve(&binary, id));
+    // Remote attachment must not wait on every registered local session. Resolve
+    // freshly so an old public ID cannot bind to a replacement terminal.
+    let route = if id.starts_with("herdr:machine:") {
+        crate::remote_route::resolve(&binary, id)
+    } else {
+        crate::collect().focus_routes.remove(id)
+    };
     bind_route(
         binary,
         route.ok_or("This companion has no available Herdr terminal.")?,

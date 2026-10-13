@@ -25,6 +25,12 @@ class FakeHost extends Node:
 	var town := {"hud": FakeHud.new()}
 
 func _initialize() -> void:
+	var transport = preload("res://scripts/desktop/transport.gd")
+	assert(not transport.request_timed_out({"type": "terminal.open"}, 9.06))
+	assert(not transport.request_timed_out({"type": "terminal.open"}, 22.0))
+	assert(transport.request_timed_out({"type": "terminal.open"}, 30.01))
+	assert(transport.request_timed_out({"type": "poll"}, 9.06))
+	assert(not transport.request_timed_out({}, 31.0))
 	var remote := {"id": "remote", "source": "herdr", "remoteMachine": "Build", "supportsObserve": true, "supportsTerminal": false}
 	var local := {"id": "local", "source": "herdr", "supportsObserve": true, "supportsTerminal": true}
 	assert(Capabilities.can_observe(remote))

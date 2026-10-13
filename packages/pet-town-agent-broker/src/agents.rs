@@ -110,3 +110,13 @@ pub(crate) fn parse_agent_list(text: &str) -> Result<Vec<ParsedAgent>, serde_jso
     agents.dedup_by(|left, right| left.view.id == right.view.id);
     Ok(agents)
 }
+
+/// Renderer IDs must change when a fallback terminal is replaced.
+pub(crate) fn remote_session_identity(session: &str, pane: &str, terminal: Option<&str>) -> String {
+    if session.starts_with("ephemeral:") {
+        if let Some(terminal) = terminal {
+            return format!("ephemeral:terminal:{}", serde_json::json!([pane, terminal]));
+        }
+    }
+    session.to_string()
+}

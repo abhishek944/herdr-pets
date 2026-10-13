@@ -126,7 +126,12 @@ pub(crate) fn query_session(
                     .unwrap_or_else(|| format!("ephemeral:{pane_id}"));
                 let (public_id, owner_key) = if let Some((id, label)) = &machine {
                     agent.view.label = format!("{label}: {}", agent.view.label);
-                    remote_identity(id, &agent_session_id)
+                    let identity = crate::agents::remote_session_identity(
+                        &agent_session_id,
+                        &pane_id,
+                        agent.terminal_id.as_deref(),
+                    );
+                    remote_identity(id, &identity)
                 } else {
                     (
                         public_id(socket.as_deref(), &agent_session_id),
