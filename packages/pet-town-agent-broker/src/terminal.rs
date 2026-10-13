@@ -9,6 +9,7 @@ pub struct TerminalTarget {
     pane: String,
     socket: Option<String>,
     session: String,
+    terminal: Option<String>,
     remote: Option<Observer>,
 }
 
@@ -33,11 +34,14 @@ pub(crate) fn bind_route(binary: OsString, route: FocusRoute) -> Result<Terminal
         socket,
         machine,
         agent_session_id,
+        terminal_id,
     } = route
     else {
         return Err("This companion has no available Herdr terminal.".into());
     };
-    if agent_session_id.starts_with("ephemeral:") {
+    if agent_session_id.starts_with("ephemeral:")
+        && (machine.is_none() || terminal_id.as_deref().is_none_or(|id| id.trim().is_empty()))
+    {
         return Err("Herdr has not reported a stable session for this companion.".into());
     }
     let remote = machine
@@ -54,6 +58,7 @@ pub(crate) fn bind_route(binary: OsString, route: FocusRoute) -> Result<Terminal
             socket.or_else(|| std::env::var("HERDR_SOCKET_PATH").ok())
         },
         session: agent_session_id,
+        terminal: terminal_id,
     };
     target.verify()?;
     Ok(target)
@@ -85,9 +90,16 @@ impl TerminalTarget {
         .ok_or("The Herdr session is unavailable. Reconnect to watch again.")?;
         let value: Value =
             serde_json::from_str(&text).map_err(|_| "Herdr returned invalid session details.")?;
-        if value["result"]["agent"]["agent_session"]["value"].as_str()
-            != Some(self.session.as_str())
-        {
+        let agent = &value["result"]["agent"];
+        if self.session.starts_with("ephemeral:") {
+            // Read-only fallback follows a terminal, rather than a harness run.
+            if agent["terminal_id"].as_str() != self.terminal.as_deref()
+                || agent["terminal_id"].as_str().is_none()
+                || agent["agent_session"]["value"].as_str().is_some()
+            {
+                return Err("This terminal ended or changed. Choose its current companion.".into());
+            }
+        } else if agent["agent_session"]["value"].as_str() != Some(self.session.as_str()) {
             return Err(
                 "This agent session ended or changed. Choose its current companion.".into(),
             );

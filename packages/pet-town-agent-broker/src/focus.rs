@@ -121,6 +121,7 @@ pub fn focus_route_with_codex_activation(route: &FocusRoute) -> Result<bool, Str
             socket,
             machine,
             agent_session_id,
+            ..
         } => focus_herdr(
             &herdr::binary(),
             pane_id,

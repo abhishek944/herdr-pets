@@ -137,7 +137,8 @@ pub(crate) fn query_session(
                 agent.view.source = "herdr".to_string();
                 agent.view.supports_terminal =
                     machine.is_none() && !agent_session_id.starts_with("ephemeral:");
-                agent.view.supports_observe = !agent_session_id.starts_with("ephemeral:");
+                agent.view.supports_observe = !agent_session_id.starts_with("ephemeral:")
+                    || (machine.is_some() && agent.terminal_id.is_some());
                 agent.view.remote_machine = machine.as_ref().map(|(_, label)| label.clone());
                 AdapterAgent {
                     owner_key,
@@ -148,6 +149,7 @@ pub(crate) fn query_session(
                         socket: socket.clone().filter(|_| machine.is_none()),
                         machine: machine.as_ref().map(|(id, _)| id.clone()),
                         agent_session_id,
+                        terminal_id: agent.terminal_id,
                     }),
                 }
             })

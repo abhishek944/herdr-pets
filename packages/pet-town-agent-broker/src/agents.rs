@@ -34,6 +34,7 @@ struct RawAgent {
     #[serde(default)]
     agent_status: String,
     agent_session: Option<RawAgentSession>,
+    terminal_id: Option<String>,
     foreground_cwd: Option<String>,
     cwd: Option<String>,
     tab_id: Option<String>,
@@ -50,6 +51,7 @@ pub(crate) struct ParsedAgent {
     pub tab_id: Option<String>,
     pub workspace_id: Option<String>,
     pub agent_session_id: Option<String>,
+    pub terminal_id: Option<String>,
 }
 
 fn safe_project_name(path: Option<&str>) -> String {
@@ -100,6 +102,7 @@ pub(crate) fn parse_agent_list(text: &str) -> Result<Vec<ParsedAgent>, serde_jso
                 tab_id: agent.tab_id,
                 workspace_id: agent.workspace_id,
                 agent_session_id: agent.agent_session.map(|session| session.value),
+                terminal_id: agent.terminal_id.filter(|id| !id.trim().is_empty()),
             }
         })
         .collect();

@@ -23,6 +23,7 @@ impl From<pet_town_agent_broker::FocusRoute> for FocusRoute {
                 socket,
                 machine,
                 agent_session_id,
+                ..
             } => Self::Herdr {
                 pane_id,
                 socket,

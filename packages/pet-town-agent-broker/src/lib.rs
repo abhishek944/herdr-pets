@@ -19,6 +19,8 @@ mod remote_schedule;
 mod state;
 mod terminal;
 mod terminal_api;
+#[cfg(all(test, unix))]
+mod terminal_identity_checks;
 mod terminal_remote;
 #[cfg(all(test, unix))]
 mod terminal_remote_checks;
@@ -54,6 +56,8 @@ pub enum FocusRoute {
         #[serde(default)]
         machine: Option<String>,
         agent_session_id: String,
+        #[serde(default)]
+        terminal_id: Option<String>,
     },
     Application {
         bundle_id: String,

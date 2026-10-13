@@ -61,6 +61,7 @@ fn remote_binding_revalidates_identity_and_rejects_input_modes() {
         socket: Some("/wrong/local/socket".into()),
         machine: Some("m1".into()),
         agent_session_id: session.into(),
+        terminal_id: None,
     };
     let target = bind_route(fake.binary.clone(), route("shared-session")).unwrap();
     assert!(target.validate_mode(false, false).is_ok());

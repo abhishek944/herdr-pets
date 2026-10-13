@@ -27,6 +27,7 @@ fn run_focus_route(herdr: &OsString, target: &FocusRoute) -> Result<(), String> 
                     socket: None,
                     machine: machine.clone(),
                     agent_session_id: agent_session_id.clone(),
+                    terminal_id: None,
                 })
             } else {
                 herdr::focus(herdr, pane_id, socket.as_deref(), agent_session_id)

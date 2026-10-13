@@ -113,3 +113,9 @@ requirement; remote selection may require the manual machine-selection step.
 
 Run `pnpm run check:broker` and `pnpm run check:remote-ui` for subprocess ownership,
 cancellation, timeouts, per-machine scheduling, and renderer capability checks.
+
+Remote Observe prefers the native agent-session identity. When Herdr has no
+native session ID, it binds to the reported terminal ID and revalidates it before
+attachment and during observation. A replaced terminal or a newly reported
+native session ends that view; reconnect uses the current companion. This
+fallback follows terminal output across harness runs and never enables input.

@@ -84,6 +84,7 @@ fn remote_discovery_preserves_machine_routes_and_duplicate_session_ids() {
             pane_id: "w1:p1".into(),
             socket: None,
             machine: Some("m1".into()),
+            terminal_id: None,
             agent_session_id: "shared-session".into()
         })
     );

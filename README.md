@@ -185,3 +185,9 @@ session; SSH authentication and host verification must work noninteractively,
 and Herdr must be on the remote SSH PATH. Linux/macOS POSIX SSH servers are
 supported. The `--snapshot` CLI
 performs an explicit synchronous remote refresh before printing its result.
+
+Remote Observe prefers the native agent-session identity. When Herdr has no
+native session ID, it binds to the reported terminal ID and revalidates it before
+attachment and during observation. A replaced terminal or a newly reported
+native session ends that view; reconnect uses the current companion. This
+fallback follows terminal output across harness runs and never enables input.
