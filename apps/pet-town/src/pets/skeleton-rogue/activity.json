@@ -5,82 +5,55 @@
       "asset": "activity-rollercoaster-working.webp",
       "durationMs": 960,
       "scale": 1.543,
-      "anchorNormalized": [
-        0.4629,
-        0.7852
-      ]
+      "anchorNormalized": [0.4629, 0.7852]
     },
     "rollercoaster-blocked": {
       "asset": "activity-rollercoaster-blocked.webp",
       "durationMs": 1440,
       "scale": 1.0831,
-      "anchorNormalized": [
-        0.4883,
-        0.7832
-      ]
+      "anchorNormalized": [0.4883, 0.7832]
     },
     "rollercoaster-done": {
       "asset": "activity-rollercoaster-done.webp",
       "durationMs": 1200,
       "scale": 0.9454,
-      "anchorNormalized": [
-        0.5098,
-        0.7598
-      ]
+      "anchorNormalized": [0.5098, 0.7598]
     },
     "goldmine-working": {
       "asset": "activity-goldmine-working.webp",
       "durationMs": 960,
       "scale": 1.5005,
-      "anchorNormalized": [
-        0.3701,
-        0.9316
-      ]
+      "anchorNormalized": [0.3701, 0.9316]
     },
     "goldmine-blocked": {
       "asset": "activity-goldmine-blocked.webp",
       "durationMs": 960,
       "scale": 1.0552,
-      "anchorNormalized": [
-        0.5361,
-        0.9355
-      ]
+      "anchorNormalized": [0.5361, 0.9355]
     },
     "goldmine-done": {
       "asset": "activity-goldmine-done.webp",
       "durationMs": 960,
       "scale": 1.2026,
-      "anchorNormalized": [
-        0.4307,
-        0.9336
-      ]
+      "anchorNormalized": [0.4307, 0.9336]
     },
     "railway-working": {
       "asset": "activity-railway-working.webp",
       "durationMs": 960,
       "scale": 1.0034,
-      "anchorNormalized": [
-        0.4932,
-        0.9277
-      ]
+      "anchorNormalized": [0.4932, 0.9277]
     },
     "railway-blocked": {
       "asset": "activity-railway-blocked.webp",
       "durationMs": 1200,
       "scale": 1.0977,
-      "anchorNormalized": [
-        0.5059,
-        0.9219
-      ]
+      "anchorNormalized": [0.5059, 0.9219]
     },
     "railway-done": {
       "asset": "activity-railway-done.webp",
       "durationMs": 1200,
       "scale": 1.069,
-      "anchorNormalized": [
-        0.4268,
-        0.9336
-      ]
+      "anchorNormalized": [0.4268, 0.9336]
     }
   }
 }

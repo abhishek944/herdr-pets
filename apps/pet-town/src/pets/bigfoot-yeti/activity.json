@@ -5,82 +5,55 @@
       "asset": "activity-rollercoaster-working.webp",
       "durationMs": 960,
       "scale": 0.8612,
-      "anchorNormalized": [
-        0.48,
-        0.73
-      ]
+      "anchorNormalized": [0.48, 0.73]
     },
     "rollercoaster-blocked": {
       "asset": "activity-rollercoaster-blocked.webp",
       "durationMs": 1440,
       "scale": 0.7183,
-      "anchorNormalized": [
-        0.63,
-        0.73
-      ]
+      "anchorNormalized": [0.63, 0.73]
     },
     "rollercoaster-done": {
       "asset": "activity-rollercoaster-done.webp",
       "durationMs": 1200,
       "scale": 0.7202,
-      "anchorNormalized": [
-        0.66,
-        0.73
-      ]
+      "anchorNormalized": [0.66, 0.73]
     },
     "goldmine-working": {
       "asset": "activity-goldmine-working.webp",
       "durationMs": 960,
       "scale": 0.7383,
-      "anchorNormalized": [
-        0.36,
-        0.94
-      ]
+      "anchorNormalized": [0.36, 0.94]
     },
     "goldmine-blocked": {
       "asset": "activity-goldmine-blocked.webp",
       "durationMs": 960,
       "scale": 0.6439,
-      "anchorNormalized": [
-        0.42,
-        0.94
-      ]
+      "anchorNormalized": [0.42, 0.94]
     },
     "goldmine-done": {
       "asset": "activity-goldmine-done.webp",
       "durationMs": 960,
       "scale": 0.7688,
-      "anchorNormalized": [
-        0.45,
-        0.93
-      ]
+      "anchorNormalized": [0.45, 0.93]
     },
     "railway-working": {
       "asset": "activity-railway-working.webp",
       "durationMs": 960,
       "scale": 0.6315,
-      "anchorNormalized": [
-        0.43,
-        0.94
-      ]
+      "anchorNormalized": [0.43, 0.94]
     },
     "railway-blocked": {
       "asset": "activity-railway-blocked.webp",
       "durationMs": 1200,
       "scale": 0.8733,
-      "anchorNormalized": [
-        0.4,
-        0.94
-      ]
+      "anchorNormalized": [0.4, 0.94]
     },
     "railway-done": {
       "asset": "activity-railway-done.webp",
       "durationMs": 1200,
       "scale": 0.9652,
-      "anchorNormalized": [
-        0.39,
-        0.94
-      ]
+      "anchorNormalized": [0.39, 0.94]
     }
   }
 }

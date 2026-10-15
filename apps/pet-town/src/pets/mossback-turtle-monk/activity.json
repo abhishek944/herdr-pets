@@ -5,82 +5,55 @@
       "asset": "activity-rollercoaster-working.webp",
       "durationMs": 960,
       "scale": 1.3028,
-      "anchorNormalized": [
-        0.4,
-        0.801
-      ]
+      "anchorNormalized": [0.4, 0.801]
     },
     "rollercoaster-blocked": {
       "asset": "activity-rollercoaster-blocked.webp",
       "durationMs": 1440,
       "scale": 1.134,
-      "anchorNormalized": [
-        0.42,
-        0.82
-      ]
+      "anchorNormalized": [0.42, 0.82]
     },
     "rollercoaster-done": {
       "asset": "activity-rollercoaster-done.webp",
       "durationMs": 1200,
       "scale": 1.1712,
-      "anchorNormalized": [
-        0.391,
-        0.83
-      ]
+      "anchorNormalized": [0.391, 0.83]
     },
     "goldmine-working": {
       "asset": "activity-goldmine-working.webp",
       "durationMs": 960,
       "scale": 1.1727,
-      "anchorNormalized": [
-        0.492,
-        0.928
-      ]
+      "anchorNormalized": [0.492, 0.928]
     },
     "goldmine-blocked": {
       "asset": "activity-goldmine-blocked.webp",
       "durationMs": 960,
       "scale": 1.1311,
-      "anchorNormalized": [
-        0.203,
-        0.928
-      ]
+      "anchorNormalized": [0.203, 0.928]
     },
     "goldmine-done": {
       "asset": "activity-goldmine-done.webp",
       "durationMs": 960,
       "scale": 1.1743,
-      "anchorNormalized": [
-        0.303,
-        0.928
-      ]
+      "anchorNormalized": [0.303, 0.928]
     },
     "railway-working": {
       "asset": "activity-railway-working.webp",
       "durationMs": 960,
       "scale": 1.165,
-      "anchorNormalized": [
-        0.723,
-        0.928
-      ]
+      "anchorNormalized": [0.723, 0.928]
     },
     "railway-blocked": {
       "asset": "activity-railway-blocked.webp",
       "durationMs": 1200,
       "scale": 1.4371,
-      "anchorNormalized": [
-        0.381,
-        0.93
-      ]
+      "anchorNormalized": [0.381, 0.93]
     },
     "railway-done": {
       "asset": "activity-railway-done.webp",
       "durationMs": 1200,
       "scale": 1.3604,
-      "anchorNormalized": [
-        0.514,
-        0.928
-      ]
+      "anchorNormalized": [0.514, 0.928]
     }
   }
 }

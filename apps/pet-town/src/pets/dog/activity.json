@@ -5,82 +5,55 @@
       "asset": "activity-goldmine-blocked.webp",
       "durationMs": 960,
       "scale": 0.9124,
-      "anchorNormalized": [
-        0.5547,
-        0.9287
-      ]
+      "anchorNormalized": [0.5547, 0.9287]
     },
     "goldmine-done": {
       "asset": "activity-goldmine-done.webp",
       "durationMs": 960,
       "scale": 1.0565,
-      "anchorNormalized": [
-        0.6152,
-        0.9199
-      ]
+      "anchorNormalized": [0.6152, 0.9199]
     },
     "goldmine-working": {
       "asset": "activity-goldmine-working.webp",
       "durationMs": 960,
       "scale": 1.16,
-      "anchorNormalized": [
-        0.4990234375,
-        0.939453125
-      ]
+      "anchorNormalized": [0.4990234375, 0.939453125]
     },
     "railway-blocked": {
       "asset": "activity-railway-blocked.webp",
       "durationMs": 1200,
       "scale": 0.8775,
-      "anchorNormalized": [
-        0.6997,
-        0.9395
-      ]
+      "anchorNormalized": [0.6997, 0.9395]
     },
     "railway-done": {
       "asset": "activity-railway-done.webp",
       "durationMs": 1200,
       "scale": 0.8775,
-      "anchorNormalized": [
-        0.5684,
-        0.9277
-      ]
+      "anchorNormalized": [0.5684, 0.9277]
     },
     "railway-working": {
       "asset": "activity-railway-working.webp",
       "durationMs": 960,
       "scale": 1.0565,
-      "anchorNormalized": [
-        0.3711,
-        0.9355
-      ]
+      "anchorNormalized": [0.3711, 0.9355]
     },
     "rollercoaster-blocked": {
       "asset": "activity-rollercoaster-blocked.webp",
       "durationMs": 1440,
       "scale": 1.0037,
-      "anchorNormalized": [
-        0.3555,
-        0.8838
-      ]
+      "anchorNormalized": [0.3555, 0.8838]
     },
     "rollercoaster-done": {
       "asset": "activity-rollercoaster-done.webp",
       "durationMs": 1200,
       "scale": 0.9559,
-      "anchorNormalized": [
-        0.3809,
-        0.9023
-      ]
+      "anchorNormalized": [0.3809, 0.9023]
     },
     "rollercoaster-working": {
       "asset": "activity-rollercoaster-working.webp",
       "durationMs": 960,
       "scale": 0.9336,
-      "anchorNormalized": [
-        0.3803,
-        0.9102
-      ]
+      "anchorNormalized": [0.3803, 0.9102]
     }
   }
 }

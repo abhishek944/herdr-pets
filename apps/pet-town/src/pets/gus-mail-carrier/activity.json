@@ -5,82 +5,55 @@
       "asset": "activity-rollercoaster-working.webp",
       "durationMs": 960,
       "scale": 0.9706,
-      "anchorNormalized": [
-        0.33789,
-        0.83203
-      ]
+      "anchorNormalized": [0.33789, 0.83203]
     },
     "rollercoaster-blocked": {
       "asset": "activity-rollercoaster-blocked.webp",
       "durationMs": 1440,
       "scale": 0.7986,
-      "anchorNormalized": [
-        0.3125,
-        0.79102
-      ]
+      "anchorNormalized": [0.3125, 0.79102]
     },
     "rollercoaster-done": {
       "asset": "activity-rollercoaster-done.webp",
       "durationMs": 1200,
       "scale": 0.7986,
-      "anchorNormalized": [
-        0.30859,
-        0.83203
-      ]
+      "anchorNormalized": [0.30859, 0.83203]
     },
     "goldmine-working": {
       "asset": "activity-goldmine-working.webp",
       "durationMs": 960,
       "scale": 0.8252,
-      "anchorNormalized": [
-        0.49219,
-        0.93945
-      ]
+      "anchorNormalized": [0.49219, 0.93945]
     },
     "goldmine-blocked": {
       "asset": "activity-goldmine-blocked.webp",
       "durationMs": 960,
       "scale": 0.7818,
-      "anchorNormalized": [
-        0.49023,
-        0.9375
-      ]
+      "anchorNormalized": [0.49023, 0.9375]
     },
     "goldmine-done": {
       "asset": "activity-goldmine-done.webp",
       "durationMs": 960,
       "scale": 0.844,
-      "anchorNormalized": [
-        0.5,
-        0.9375
-      ]
+      "anchorNormalized": [0.5, 0.9375]
     },
     "railway-working": {
       "asset": "activity-railway-working.webp",
       "durationMs": 960,
       "scale": 0.7901,
-      "anchorNormalized": [
-        0.55078,
-        0.9375
-      ]
+      "anchorNormalized": [0.55078, 0.9375]
     },
     "railway-blocked": {
       "asset": "activity-railway-blocked.webp",
       "durationMs": 1200,
       "scale": 0.8252,
-      "anchorNormalized": [
-        0.50195,
-        0.93945
-      ]
+      "anchorNormalized": [0.50195, 0.93945]
     },
     "railway-done": {
       "asset": "activity-railway-done.webp",
       "durationMs": 1200,
       "scale": 0.844,
-      "anchorNormalized": [
-        0.50391,
-        0.9375
-      ]
+      "anchorNormalized": [0.50391, 0.9375]
     }
   }
 }

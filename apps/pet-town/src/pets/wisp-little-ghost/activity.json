@@ -5,82 +5,55 @@
       "asset": "activity-rollercoaster-working.webp",
       "durationMs": 960,
       "scale": 0.702,
-      "anchorNormalized": [
-        0.4355,
-        0.9414
-      ]
+      "anchorNormalized": [0.4355, 0.9414]
     },
     "rollercoaster-blocked": {
       "asset": "activity-rollercoaster-blocked.webp",
       "durationMs": 1440,
       "scale": 0.784,
-      "anchorNormalized": [
-        0.5283,
-        0.9219
-      ]
+      "anchorNormalized": [0.5283, 0.9219]
     },
     "rollercoaster-done": {
       "asset": "activity-rollercoaster-done.webp",
       "durationMs": 1200,
       "scale": 0.768,
-      "anchorNormalized": [
-        0.5146,
-        0.9414
-      ]
+      "anchorNormalized": [0.5146, 0.9414]
     },
     "goldmine-working": {
       "asset": "activity-goldmine-working.webp",
       "durationMs": 960,
       "scale": 1.215,
-      "anchorNormalized": [
-        0.3418,
-        0.9111
-      ]
+      "anchorNormalized": [0.3418, 0.9111]
     },
     "goldmine-blocked": {
       "asset": "activity-goldmine-blocked.webp",
       "durationMs": 960,
       "scale": 0.744,
-      "anchorNormalized": [
-        0.2822,
-        0.9326
-      ]
+      "anchorNormalized": [0.2822, 0.9326]
     },
     "goldmine-done": {
       "asset": "activity-goldmine-done.webp",
       "durationMs": 960,
       "scale": 0.958,
-      "anchorNormalized": [
-        0.6162,
-        0.8838
-      ]
+      "anchorNormalized": [0.6162, 0.8838]
     },
     "railway-working": {
       "asset": "activity-railway-working.webp",
       "durationMs": 960,
       "scale": 0.97,
-      "anchorNormalized": [
-        0.4658,
-        0.9414
-      ]
+      "anchorNormalized": [0.4658, 0.9414]
     },
     "railway-blocked": {
       "asset": "activity-railway-blocked.webp",
       "durationMs": 1200,
       "scale": 0.721,
-      "anchorNormalized": [
-        0.4961,
-        0.9414
-      ]
+      "anchorNormalized": [0.4961, 0.9414]
     },
     "railway-done": {
       "asset": "activity-railway-done.webp",
       "durationMs": 1200,
       "scale": 0.736,
-      "anchorNormalized": [
-        0.4961,
-        0.9414
-      ]
+      "anchorNormalized": [0.4961, 0.9414]
     }
   }
 }
