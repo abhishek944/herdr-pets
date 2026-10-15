@@ -111,10 +111,28 @@ fn window_geometry_matches(window: &WebviewWindow, monitor: &Monitor) -> Result<
 /// Returns true when the street set changed and frontends must re-partition.
 pub(crate) fn reconcile_street_windows(app: &AppHandle) -> Result<bool, String> {
     let monitors = sorted_monitors(app)?;
+    // Display reconfiguration can briefly report no monitors. Retry next tick
+    // rather than close every street and accidentally initiate app shutdown.
+    if monitors.is_empty() {
+        return Ok(false);
+    }
     let mut streets = street_windows(app);
     let mut changed = false;
     while streets.len() > monitors.len() {
         if let Some(extra) = streets.pop() {
+            // Restore Tao's native class and release the plugin's retained panel
+            // before Tauri destroys it. Closing a converted NSPanel directly aborts.
+            #[cfg(target_os = "macos")]
+            let extra = {
+                use tauri_nspanel::ManagerExt;
+                match app.get_webview_panel(extra.label()) {
+                    Ok(panel) => panel
+                        .to_window()
+                        .ok_or("Could not restore the retiring Pet Street window")?,
+                    // An earlier close request may already have restored it.
+                    Err(_) => extra,
+                }
+            };
             extra.close().map_err(|error| error.to_string())?;
             changed = true;
         }
@@ -154,7 +172,9 @@ pub(crate) fn start_street_watcher(app: AppHandle) {
         let target = app.clone();
         if app
             .run_on_main_thread(move || {
-                let _ = reconcile_street_windows(&target);
+                if let Err(error) = reconcile_street_windows(&target) {
+                    eprintln!("Could not update Pet Street displays: {error}");
+                }
             })
             .is_err()
         {
