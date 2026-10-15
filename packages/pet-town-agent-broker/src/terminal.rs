@@ -1,4 +1,4 @@
-use crate::{command, herdr, FocusRoute};
+use crate::{command, herdr, terminal_remote::Observer, FocusRoute};
 use serde_json::Value;
 use std::ffi::OsString;
 use std::process::{Command, Stdio};
@@ -9,49 +9,100 @@ pub struct TerminalTarget {
     pane: String,
     socket: Option<String>,
     session: String,
+    terminal: Option<String>,
+    remote: Option<Observer>,
 }
 
 pub fn terminal_target(id: &str) -> Result<TerminalTarget, String> {
     if id.is_empty() || id.len() > 256 {
         return Err("Choose a current Herdr companion.".into());
     }
-    let route = crate::collect().focus_routes.remove(id);
-    let Some(FocusRoute::Herdr {
+    let binary = herdr::binary();
+    // Remote attachment must not wait on every registered local session. Resolve
+    // freshly so an old public ID cannot bind to a replacement terminal.
+    let route = if id.starts_with("herdr:machine:") {
+        crate::remote_route::resolve(&binary, id)
+    } else {
+        crate::collect().focus_routes.remove(id)
+    };
+    bind_route(
+        binary,
+        route.ok_or("This companion has no available Herdr terminal.")?,
+    )
+}
+
+pub(crate) fn bind_route(binary: OsString, route: FocusRoute) -> Result<TerminalTarget, String> {
+    let FocusRoute::Herdr {
         pane_id,
         socket,
+        machine,
         agent_session_id,
-    }) = route
+        terminal_id,
+    } = route
     else {
         return Err("This companion has no available Herdr terminal.".into());
     };
-    if agent_session_id.starts_with("ephemeral:") {
+    if agent_session_id.starts_with("ephemeral:")
+        && (machine.is_none() || terminal_id.as_deref().is_none_or(|id| id.trim().is_empty()))
+    {
         return Err("Herdr has not reported a stable session for this companion.".into());
     }
+    let remote = machine
+        .as_deref()
+        .map(|id| Observer::load(&binary, id))
+        .transpose()?;
     let target = TerminalTarget {
-        binary: herdr::binary(),
+        binary,
+        remote,
         pane: pane_id,
-        socket: socket.or_else(|| std::env::var("HERDR_SOCKET_PATH").ok()),
+        socket: if machine.is_some() {
+            None
+        } else {
+            socket.or_else(|| std::env::var("HERDR_SOCKET_PATH").ok())
+        },
         session: agent_session_id,
+        terminal: terminal_id,
     };
     target.verify()?;
     Ok(target)
 }
 
 impl TerminalTarget {
+    pub fn validate_mode(&self, control: bool, takeover: bool) -> Result<(), String> {
+        if self.remote.is_some() && (control || takeover) {
+            return Err("Remote terminals support Observe only. Use Herdr for input.".into());
+        }
+        Ok(())
+    }
     pub fn return_to_live(&self) -> Result<(), String> {
         let socket = self.socket.as_deref().ok_or("Herdr has not reported this view's API socket. Open in Herdr to return to live output.")?;
         crate::terminal_api::live(socket, &self.pane)
     }
 
     pub fn verify(&self) -> Result<(), String> {
+        if let Some(remote) = &self.remote {
+            remote.verify_profile(&self.binary)?;
+        }
         let args = vec!["agent".into(), "get".into(), self.pane.clone()];
-        let text = command::run(&self.binary, self.socket.as_deref(), &args)
-            .ok_or("The Herdr session is unavailable. Reconnect to watch again.")?;
+        let text = command::run_on_machine(
+            &self.binary,
+            self.socket.as_deref(),
+            self.remote.as_ref().map(|r| r.id.as_str()),
+            &args,
+        )
+        .ok_or("The Herdr session is unavailable. Reconnect to watch again.")?;
         let value: Value =
             serde_json::from_str(&text).map_err(|_| "Herdr returned invalid session details.")?;
-        if value["result"]["agent"]["agent_session"]["value"].as_str()
-            != Some(self.session.as_str())
-        {
+        let agent = &value["result"]["agent"];
+        if self.session.starts_with("ephemeral:") {
+            // Read-only fallback follows a terminal, rather than a harness run.
+            if agent["terminal_id"].as_str() != self.terminal.as_deref()
+                || agent["terminal_id"].as_str().is_none()
+                || agent["agent_session"]["value"].as_str().is_some()
+            {
+                return Err("This terminal ended or changed. Choose its current companion.".into());
+            }
+        } else if agent["agent_session"]["value"].as_str() != Some(self.session.as_str()) {
             return Err(
                 "This agent session ended or changed. Choose its current companion.".into(),
             );
@@ -59,7 +110,17 @@ impl TerminalTarget {
         Ok(())
     }
 
-    pub fn stream_command(&self, control: bool, takeover: bool, cols: u16, rows: u16) -> Command {
+    pub fn stream_command(
+        &self,
+        control: bool,
+        takeover: bool,
+        cols: u16,
+        rows: u16,
+    ) -> Result<Command, String> {
+        self.validate_mode(control, takeover)?;
+        if let Some(remote) = &self.remote {
+            return Ok(remote.command(&self.pane, cols, rows));
+        }
         let mut command = Command::new(&self.binary);
         command
             .env_remove("OPENAI_API_KEY")
@@ -84,6 +145,6 @@ impl TerminalTarget {
         if control && takeover {
             command.arg("--takeover");
         }
-        command
+        Ok(command)
     }
 }

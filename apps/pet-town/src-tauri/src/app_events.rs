@@ -13,6 +13,7 @@ pub(crate) fn run_event(app: &tauri::AppHandle, event: tauri::RunEvent) {
             }
         }
         tauri::RunEvent::Exit => {
+            app.state::<pet_town_agent_broker::RemoteMonitor>().stop();
             town_process::stop(app);
             app.state::<pet_studio::PetStudioState>().cleanup();
             if app.state::<AppUpdates>().restart_requested() {

@@ -1,4 +1,5 @@
 extends RefCounted
+const Capabilities = preload("capabilities.gd")
 var host: Node
 var terminal_token := ""
 var generation := 0
@@ -42,6 +43,12 @@ func dispatch(id: String, action: String, payload: Dictionary) -> void:
 
 func _open_terminal(id: String, control: bool, takeover := false) -> void:
 	if id.is_empty() or id != host.selected_id: return
+	var record: Dictionary = {}
+	for entry in host.entries:
+		if str(entry.get("id", "")) == id: record = entry
+	if not Capabilities.can_observe(record) or (control and not Capabilities.can_control(record)):
+		host.town.hud.show_toast("Remote terminals support Observe only." if record.get("remoteMachine") else "This companion has no available terminal.")
+		return
 	var view := _cached_view()
 	close_terminal(true)
 	terminal_control_requested = control

@@ -34,4 +34,8 @@ impl TokenActivity {
             && self.observed_at_ms <= now_ms.saturating_add(1_000)
             && now_ms.saturating_sub(self.observed_at_ms) <= 6_000
     }
+
+    pub(crate) fn if_fresh(self) -> Option<Self> {
+        self.is_fresh(now_ms()).then_some(self)
+    }
 }

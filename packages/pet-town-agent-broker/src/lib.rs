@@ -1,15 +1,29 @@
 mod agents;
+mod application_focus;
 mod command;
 mod event_focus;
 mod events;
 mod focus;
 mod herdr;
 mod labels;
-#[cfg(target_os = "macos")]
+#[cfg(all(target_os = "macos", not(test)))]
 mod macos_activation;
+mod remote;
+#[cfg(all(test, unix))]
+mod remote_checks;
+#[cfg(all(test, unix))]
+mod remote_lifecycle_checks;
+mod remote_monitor;
+mod remote_route;
+mod remote_schedule;
 mod state;
 mod terminal;
 mod terminal_api;
+#[cfg(all(test, unix))]
+mod terminal_identity_checks;
+mod terminal_remote;
+#[cfg(all(test, unix))]
+mod terminal_remote_checks;
 mod terminal_socket;
 mod token_activity;
 
@@ -19,8 +33,19 @@ use std::collections::{BTreeMap, HashMap};
 
 pub use agents::AgentView;
 pub use focus::{focus_route, focus_route_with_codex_activation};
+pub use remote_monitor::RemoteMonitor;
 pub use terminal::{terminal_target, TerminalTarget};
 pub use token_activity::{TokenActivity, TokenMeasurement};
+
+/// Revalidate a remote route in short-lived CLI/focus helper processes.
+pub fn remote_focus_route(id: &str) -> Option<FocusRoute> {
+    remote_route::resolve(&herdr::binary(), id)
+}
+
+/// Explicit synchronous refresh for the one-shot snapshot CLI.
+pub fn refresh_remote() {
+    remote::refresh(&herdr::binary());
+}
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]
@@ -28,7 +53,11 @@ pub enum FocusRoute {
     Herdr {
         pane_id: String,
         socket: Option<String>,
+        #[serde(default)]
+        machine: Option<String>,
         agent_session_id: String,
+        #[serde(default)]
+        terminal_id: Option<String>,
     },
     Application {
         bundle_id: String,
@@ -52,7 +81,7 @@ pub struct BrokerSnapshot {
     pub focus_routes: HashMap<String, FocusRoute>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct AdapterAgent {
     owner_key: String,
     hosted_owner_key: Option<String>,

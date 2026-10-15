@@ -184,9 +184,8 @@ pub(crate) fn snapshot() -> AdapterSnapshot {
                     status,
                     label: record.label,
                     source: record.source,
-                    token_activity: record
-                        .token_activity
-                        .filter(|sample| sample.is_fresh(crate::token_activity::now_ms())),
+                    token_activity: record.token_activity.and_then(crate::TokenActivity::if_fresh),
+                    ..AgentView::default()
                 },
                 focus_route,
             }
