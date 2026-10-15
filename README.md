@@ -153,3 +153,41 @@ Pet Studio does not contact an image provider. Users supply their own APNGs, whi
 ## License
 
 MIT
+
+### Remote Herdr companions
+
+Pet Town also monitors enabled saved SSH machines from `herdr machine list --json`.
+Both the local CLI and each remote installation must support Herdr's
+`--machine <profile-id>` API forwarding. Existing SSH authentication is reused;
+Pet Town does not install or restart remote servers or answer authentication prompts.
+
+The desktop app owns remote discovery and cancels its subprocesses on exit.
+Snapshot reads and short-lived focus helpers never start background discovery.
+Remote discovery allows at most eight simultaneous queries and an eight-second
+command timeout. Healthy machines poll independently every five seconds, with
+capacity reserved so slow hosts cannot prevent their refresh. Failed queries
+back off from ten seconds to one minute. Local pets
+continue updating while a remote machine is unreachable. A disconnected pet is
+shown with unknown status and expires after 30 seconds without a successful poll.
+Disabled or removed profiles disappear on the next successful machine-list refresh.
+Labels include the saved machine name; pet identity uses the profile ID and native
+agent session so identical pane/session IDs on different hosts stay separate.
+
+Remote pet clicks validate and select the pane on the correct remote server.
+The 2D strip stays quiet on success; hover over the pet for machine-selection
+instructions. The 3D action is labeled **Select remote pane**, with instructions
+shown beside it.
+Herdr's machine forwarding does not switch the selected machine in an existing
+local TUI; select the machine in Herdr to view that pane. The existing terminal viewer now supports
+read-only **Observe** for remote companions in Godot and the browser town.
+Input/control remains local-only. Remote Observe reuses the saved SSH target and
+session; SSH authentication and host verification must work noninteractively,
+and Herdr must be on the remote SSH PATH. Linux/macOS POSIX SSH servers are
+supported. The `--snapshot` CLI
+performs an explicit synchronous remote refresh before printing its result.
+
+Remote Observe prefers the native agent-session identity. When Herdr has no
+native session ID, it binds to the reported terminal ID and revalidates it before
+attachment and during observation. A replaced terminal or a newly reported
+native session ends that view; reconnect uses the current companion. This
+fallback follows terminal output across harness runs and never enables input.

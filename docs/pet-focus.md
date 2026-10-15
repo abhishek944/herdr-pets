@@ -85,3 +85,37 @@ Temporary diagnostics currently live in [focus_trace.rs](../apps/pet-town/src-ta
 For a future regression, distinguish these stages: input received → route selected → target activation requested → target active → foreground after settling. Before the final fix the trace repeatedly showed Pet Town foreground before dispatch and stale helper timeouts. After it, the original adapter stayed foreground until switching directly to the target, and Herdr completed successfully in roughly 0.6 seconds for the observed clicks.
 
 Diagnostics can be removed separately after preserving the three-part fix and its verification. Do not treat temporary tracing or local PID values as part of the product contract.
+
+## Remote companions
+
+A remote companion retains its saved machine ID in the private focus route. The
+headless focus helper resolves its opaque ID against the current enabled machine
+catalog, queries only that machine, and validates the native agent session before
+issuing any focus commands. All commands retain `--machine <profile-id>`; local
+socket and pane context are removed. A changed session or unavailable machine
+fails without falling back to a local pane with the same ID.
+
+Remote IDs go directly to that resolver without collecting local sessions or
+starting a remote discovery round. Only the desktop GUI owns a `RemoteMonitor`;
+snapshot reads are passive, and the monitor cancels and joins its subprocesses
+on shutdown. The one-shot `--snapshot` refresh joins all its work before returning.
+
+The existing local focus and macOS panel/main-run-loop flow is preserved. Remote
+server selection does not switch a local TUI's selected machine or activate a
+terminal host. The 3D action therefore says **Select remote pane**, displays the
+manual machine-selection step. Remote companions can use the existing embedded
+Observe flow to watch output without switching the selected Herdr machine.
+Remote observation never grants terminal input or takeover authority.
+The 2D strip keeps that instruction in the pet's hover tooltip and shows only
+errors in the strip without activating a window; progress and successful selection
+do not display popup bubbles. Local pets retain the direct visible-transition
+requirement; remote selection may require the manual machine-selection step.
+
+Run `pnpm run check:broker` and `pnpm run check:remote-ui` for subprocess ownership,
+cancellation, timeouts, per-machine scheduling, and renderer capability checks.
+
+Remote Observe prefers the native agent-session identity. When Herdr has no
+native session ID, it binds to the reported terminal ID and revalidates it before
+attachment and during observation. A replaced terminal or a newly reported
+native session ends that view; reconnect uses the current companion. This
+fallback follows terminal output across harness runs and never enables input.

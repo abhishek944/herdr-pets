@@ -40,6 +40,7 @@ pub(super) fn open(app: &AppHandle, request: &Value, queue: Queue) -> Result<Val
     if takeover && !control {
         return Err("Takeover requires interactive control.".into());
     }
+    target.validate_mode(control, takeover)?;
     let cols = request["cols"].as_u64().unwrap_or(80);
     let rows = request["rows"].as_u64().unwrap_or(24);
     if !(2..=512).contains(&cols) || !(2..=256).contains(&rows) {

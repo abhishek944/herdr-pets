@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AgentView {
     pub id: String,
@@ -10,6 +10,12 @@ pub struct AgentView {
     pub source: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub token_activity: Option<crate::TokenActivity>,
+    #[serde(default)]
+    pub supports_terminal: bool,
+    #[serde(default)]
+    pub supports_observe: bool,
+    #[serde(default)]
+    pub remote_machine: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -28,6 +34,7 @@ struct RawAgent {
     #[serde(default)]
     agent_status: String,
     agent_session: Option<RawAgentSession>,
+    terminal_id: Option<String>,
     foreground_cwd: Option<String>,
     cwd: Option<String>,
     tab_id: Option<String>,
@@ -44,6 +51,7 @@ pub(crate) struct ParsedAgent {
     pub tab_id: Option<String>,
     pub workspace_id: Option<String>,
     pub agent_session_id: Option<String>,
+    pub terminal_id: Option<String>,
 }
 
 fn safe_project_name(path: Option<&str>) -> String {
@@ -87,14 +95,28 @@ pub(crate) fn parse_agent_list(text: &str) -> Result<Vec<ParsedAgent>, serde_jso
                     label: safe_project_name(project_path),
                     source: "unknown".to_string(),
                     token_activity: None,
+                    supports_terminal: false,
+                    supports_observe: false,
+                    remote_machine: None,
                 },
                 tab_id: agent.tab_id,
                 workspace_id: agent.workspace_id,
                 agent_session_id: agent.agent_session.map(|session| session.value),
+                terminal_id: agent.terminal_id.filter(|id| !id.trim().is_empty()),
             }
         })
         .collect();
     agents.sort_by(|left, right| left.view.id.cmp(&right.view.id));
     agents.dedup_by(|left, right| left.view.id == right.view.id);
     Ok(agents)
+}
+
+/// Renderer IDs must change when a fallback terminal is replaced.
+pub(crate) fn remote_session_identity(session: &str, pane: &str, terminal: Option<&str>) -> String {
+    if session.starts_with("ephemeral:") {
+        if let Some(terminal) = terminal {
+            return format!("ephemeral:terminal:{}", serde_json::json!([pane, terminal]));
+        }
+    }
+    session.to_string()
 }

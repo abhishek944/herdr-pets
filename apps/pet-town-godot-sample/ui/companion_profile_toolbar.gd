@@ -2,6 +2,7 @@ extends PanelContainer
 
 signal action_requested(id: String, action: String, payload: Dictionary)
 
+const Capabilities = preload("res://scripts/desktop/capabilities.gd")
 const Style = preload("res://ui/hud_style.gd")
 
 var record: Dictionary = {}
@@ -69,8 +70,8 @@ func _update_record() -> void:
 	var status_text := _status_text(str(record.get("status", "")))
 	var source_text := "Herdr" if source.to_lower() == "herdr" else source.capitalize() if not source.is_empty() else "Agent"
 	status.text = "%s · %s" % [source_text, status_text]
-	_update_action("focus", "Open in Herdr" if source.to_lower() == "herdr" else "Open agent", true, false)
-	_update_action("interact", "Terminal", source.to_lower() == "herdr", false)
+	_update_action("focus", "Select remote pane" if record.get("remoteMachine") else "Open in Herdr" if source.to_lower() == "herdr" else "Open agent", true, false)
+	_update_action("interact", Capabilities.label(record), Capabilities.can_observe(record), false)
 	var controlled := bool(record.get("controlled", false))
 	var first_person := bool(record.get("firstPerson", false))
 	_update_action("control", "Release control" if controlled else "Control companion", true, controlled)
@@ -136,7 +137,7 @@ func _activate(key: String) -> void:
 		return
 	match key:
 		"focus": action_requested.emit(id, "focus", {})
-		"interact": action_requested.emit(id, "interact", {})
+		"interact": action_requested.emit(id, Capabilities.action(record), {})
 		"control": action_requested.emit(id, "control", {})
 		"camera": action_requested.emit(id, "camera", {"first_person": not bool(record.get("firstPerson", false))})
 		"leave": action_requested.emit(id, "leave", {})
@@ -145,8 +146,8 @@ func _description(key: String, selected: bool, enabled: bool) -> String:
 	if not enabled:
 		return "Available only for Herdr companions."
 	match key:
-		"focus": return "Open this companion using Pet Town's existing scoped focus action."
-		"interact": return "Deliberately request terminal input; existing ownership checks still apply."
+		"focus": return "Select its remote pane; open Herdr and select that machine to view it." if record.get("remoteMachine") else "Open this companion using Pet Town's existing scoped focus action."
+		"interact": return "Observe this remote terminal without taking control of its input." if record.get("remoteMachine") else "Deliberately request terminal input; existing ownership checks still apply."
 		"control": return "Release local companion control." if selected else "Take local control of this companion."
 		"camera": return "Switch to third person." if selected else "Switch to first person."
 		"leave": return "Return to exploring. The agent continues running."

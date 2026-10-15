@@ -49,6 +49,7 @@ pub(crate) async fn town_terminal_open(
             .unwrap_or_else(|error| error.into_inner());
         lifecycle::check(&app, &window, epoch)?;
         let target = pet_town_agent_broker::terminal_target(&id)?;
+        target.validate_mode(control, takeover)?;
         // A pending attach must not acquire control after the town loses focus.
         lifecycle::check(&app, &window, epoch)?;
         let mut current = state

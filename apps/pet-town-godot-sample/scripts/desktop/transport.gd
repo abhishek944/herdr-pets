@@ -70,7 +70,7 @@ func _process(delta: float) -> void:
 			_lost()
 			return
 		_read_lines()
-	if not in_flight.is_empty() and elapsed > 8.0:
+	if request_timed_out(in_flight, elapsed):
 		_lost()
 		return
 	if in_flight.is_empty():
@@ -170,3 +170,9 @@ func _exit_tree() -> void:
 
 func cancel_terminal_pending() -> void:
 	pending=pending.filter(func(data: Dictionary) -> bool: return not str(data.get("type","")).begins_with("terminal."))
+
+static func request_timed_out(request_data: Dictionary, seconds: float) -> bool:
+	# Remote open resolves the catalog (2s), agent (8s), and validates its
+	# profile twice (2s each) plus agent (8s): 22s, with startup headroom.
+	var deadline := 30.0 if request_data.get("type", "") == "terminal.open" else 8.0
+	return not request_data.is_empty() and seconds > deadline

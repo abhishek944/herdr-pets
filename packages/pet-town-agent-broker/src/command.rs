@@ -1,11 +1,13 @@
 use std::ffi::OsString;
 use std::io::Read;
 use std::process::{Child, ChildStdout, Command, ExitStatus, Stdio};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 #[cfg(not(unix))]
 use wait_timeout::ChildExt;
 
 const HERDR_TIMEOUT: Duration = Duration::from_secs(2);
+const REMOTE_TIMEOUT: Duration = Duration::from_secs(8);
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
 
 fn terminate(child: &mut Child) {
@@ -18,7 +20,12 @@ fn terminate(child: &mut Child) {
 }
 
 #[cfg(unix)]
-fn collect_output(child: &mut Child, mut stdout: ChildStdout) -> Option<(ExitStatus, Vec<u8>)> {
+fn collect_output(
+    child: &mut Child,
+    mut stdout: ChildStdout,
+    timeout: Duration,
+    cancelled: Option<&AtomicBool>,
+) -> Option<(ExitStatus, Vec<u8>)> {
     use std::os::fd::AsRawFd;
 
     let descriptor = stdout.as_raw_fd();
@@ -29,10 +36,14 @@ fn collect_output(child: &mut Child, mut stdout: ChildStdout) -> Option<(ExitSta
         return None;
     }
 
-    let deadline = Instant::now() + HERDR_TIMEOUT;
+    let deadline = Instant::now() + timeout;
     let mut bytes = Vec::new();
     let mut buffer = [0_u8; 8192];
     loop {
+        if cancelled.is_some_and(|flag| flag.load(Ordering::Relaxed)) {
+            terminate(child);
+            return None;
+        }
         loop {
             match stdout.read(&mut buffer) {
                 Ok(0) => break,
@@ -81,7 +92,12 @@ fn collect_output(child: &mut Child, mut stdout: ChildStdout) -> Option<(ExitSta
 }
 
 #[cfg(not(unix))]
-fn collect_output(child: &mut Child, mut stdout: ChildStdout) -> Option<(ExitStatus, Vec<u8>)> {
+fn collect_output(
+    child: &mut Child,
+    mut stdout: ChildStdout,
+    timeout: Duration,
+    cancelled: Option<&AtomicBool>,
+) -> Option<(ExitStatus, Vec<u8>)> {
     let reader = std::thread::spawn(move || {
         let mut bytes = Vec::new();
         stdout
@@ -89,11 +105,20 @@ fn collect_output(child: &mut Child, mut stdout: ChildStdout) -> Option<(ExitSta
             .read_to_end(&mut bytes)
             .map(|_| bytes)
     });
-    let status = match child.wait_timeout(HERDR_TIMEOUT) {
-        Ok(Some(status)) => status,
-        _ => {
+    let deadline = Instant::now() + timeout;
+    let status = loop {
+        if Instant::now() >= deadline || cancelled.is_some_and(|flag| flag.load(Ordering::Relaxed))
+        {
             terminate(child);
             return None;
+        }
+        match child.wait_timeout(Duration::from_millis(10)) {
+            Ok(Some(status)) => break status,
+            Ok(None) => continue,
+            Err(_) => {
+                terminate(child);
+                return None;
+            }
         }
     };
     let bytes = reader.join().ok()?.ok()?;
@@ -101,14 +126,49 @@ fn collect_output(child: &mut Child, mut stdout: ChildStdout) -> Option<(ExitSta
 }
 
 pub(crate) fn run(herdr: &OsString, socket: Option<&str>, arguments: &[String]) -> Option<String> {
+    run_on_machine(herdr, socket, None, arguments)
+}
+
+pub(crate) fn run_on_machine(
+    herdr: &OsString,
+    socket: Option<&str>,
+    machine: Option<&str>,
+    arguments: &[String],
+) -> Option<String> {
+    run_cancellable(herdr, socket, machine, arguments, None)
+}
+
+pub(crate) fn run_cancellable(
+    herdr: &OsString,
+    socket: Option<&str>,
+    machine: Option<&str>,
+    arguments: &[String],
+    cancelled: Option<&AtomicBool>,
+) -> Option<String> {
+    if cancelled.is_some_and(|flag| flag.load(Ordering::Relaxed)) {
+        return None;
+    }
     let mut command = Command::new(herdr);
+    if let Some(id) = machine {
+        command.args(["--machine", id]);
+        // Never let a local pane or socket influence a remote request.
+        for name in [
+            "HERDR_SOCKET_PATH",
+            "HERDR_SESSION",
+            "HERDR_PANE_ID",
+            "HERDR_TAB_ID",
+            "HERDR_WORKSPACE_ID",
+        ] {
+            command.env_remove(name);
+        }
+    }
     command
         .env_remove("OPENAI_API_KEY")
         .args(arguments)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::null());
-    if let Some(path) = socket {
+    if let Some(path) = socket.filter(|_| machine.is_none()) {
         command.env("HERDR_SOCKET_PATH", path);
     }
     #[cfg(unix)]
@@ -118,7 +178,16 @@ pub(crate) fn run(herdr: &OsString, socket: Option<&str>, arguments: &[String]) 
     }
     let mut child = command.spawn().ok()?;
     let stdout = child.stdout.take()?;
-    let (status, bytes) = collect_output(&mut child, stdout)?;
+    let (status, bytes) = collect_output(
+        &mut child,
+        stdout,
+        if machine.is_some() {
+            REMOTE_TIMEOUT
+        } else {
+            HERDR_TIMEOUT
+        },
+        cancelled,
+    )?;
     status
         .success()
         .then(|| String::from_utf8(bytes).ok())
