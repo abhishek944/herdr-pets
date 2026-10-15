@@ -1,5 +1,5 @@
 use super::{model::Context, window, Onboarding};
-use tauri::{AppHandle, Emitter, Manager, State, WebviewWindow};
+use tauri::{AppHandle, Manager, State, WebviewWindow};
 
 #[tauri::command]
 pub(crate) async fn run_onboarding_sample(
@@ -62,7 +62,7 @@ pub(crate) async fn poll_onboarding_sample(
     let Ok(operation) = state.begin() else {
         return Ok(state.context(&app));
     };
-    let _ = app.emit_to("main", "onboarding-presence-request", ());
+    let _ = crate::street_windows::emit_to_streets(app.clone(), "onboarding-presence-request", ());
     let target = app.clone();
     tauri::async_runtime::spawn_blocking(move || {
         super::sample_poll::poll(&target.state::<Onboarding>())
@@ -116,7 +116,7 @@ pub(crate) fn report_onboarding_pets(
             && url.scheme() == "http"
             && matches!(url.host_str(), Some("localhost" | "127.0.0.1"))
             && url.port() == Some(1420));
-    if window.label() != "main"
+    if !crate::street_windows::is_street_label(window.label())
         || !local
         || !matches!(url.path(), "/" | "/index.html")
         || ids.len() > 256

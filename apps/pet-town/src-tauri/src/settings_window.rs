@@ -80,13 +80,13 @@ impl SettingsSession {
         if session.open {
             return None;
         }
-        let _ = app.emit_to("main", "village-pause", ());
+        let _ = crate::street_windows::emit_to_streets(app.clone(), "village-pause", ());
         Some(session.generation)
     }
     pub fn resume_after_reload(&self, app: &AppHandle, generation: u64) {
         let session = self.0.lock().unwrap_or_else(|error| error.into_inner());
         if session.allows_reload_resume(generation) {
-            let _ = app.emit_to("main", "village-resume", ());
+            let _ = crate::street_windows::emit_to_streets(app.clone(), "village-resume", ());
         }
     }
     fn finish(&self) -> bool {

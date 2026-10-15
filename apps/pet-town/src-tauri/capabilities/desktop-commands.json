@@ -3,6 +3,6 @@
   "identifier": "desktop-commands",
   "description": "Preserve native commands for the existing trusted local desktop windows",
   "local": true,
-  "windows": ["main", "settings", "orchestrator"],
+  "windows": ["main", "street-*", "settings", "orchestrator"],
   "permissions": ["allow-desktop-commands", "allow-open-onboarding"]
 }

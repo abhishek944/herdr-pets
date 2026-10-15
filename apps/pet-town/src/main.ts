@@ -7,12 +7,8 @@ import {
   behaviorPackForCharacter,
   bundledBehaviorPackForCharacter,
   CHARACTER_IDS,
-  installUserPacks,
   type CharacterId,
-  type PetExtensionPayload,
-  type UserPackPayload,
 } from "./character-packs";
-type PetExtensionCatalog = { extensions: PetExtensionPayload[]; warnings: string[] };
 import {
   applyActiveCast,
   reconcileCitizens,
@@ -29,6 +25,8 @@ import {
 } from "./orchestrator-pet";
 
 import { installOnboardingPresence } from "./onboarding/presence";
+import { createStreetMembership, watchStreetChanges } from "./street-citizens";
+import { reloadUserPacks, type ReloadedPacks } from "./user-packs";
 
 const POLL_INTERVAL_MS = 1_000;
 const RETIRE_ANIMATION_MS = 520;
@@ -48,6 +46,8 @@ for (const stage of ["pointerdown", "pointerup", "pointercancel", "click", "cont
 }
 
 let citizens = new Map<string, CitizenState>();
+const streets = createStreetMembership();
+
 let activePetIds: readonly CharacterId[] = CHARACTER_IDS;
 let latestPreferences: PreferencesFile | null = null;
 const retirementTimers = new Map<string, number>();
@@ -118,9 +118,11 @@ async function poll(): Promise<void> {
     const snapshot = await invoke<AgentSnapshot>("list_agents");
     citizens = reconcileCitizens(citizens, snapshot.agents, activePetIds);
     citizens = applyOrchestratorCitizen(citizens, orchestratorView);
+    streets.retain(citizens);
     renderPolledSnapshot();
   } catch {
     citizens = reconcileCitizens(citizens, [], activePetIds);
+    streets.retain(citizens);
     renderPolledSnapshot();
   } finally {
     window.setTimeout(poll, POLL_INTERVAL_MS);
@@ -128,41 +130,35 @@ async function poll(): Promise<void> {
 }
 
 window.addEventListener("resize", () => render());
-async function reloadUserPacks(): Promise<void> {
-  try {
-    const packs = await invoke<UserPackPayload[]>("list_user_pet_packs");
-    let extensions: PetExtensionPayload[] = [];
-    try {
-      const catalog = await invoke<PetExtensionCatalog>("list_pet_extensions");
-      extensions = catalog.extensions;
-    } catch {
-      /* Optional extensions never prevent base pets from loading. */
-    }
-    installUserPacks(packs, extensions);
-    orchestratorView = validOrchestratorView(pendingOrchestratorView);
-    activePetIds = allCharacterIds().filter(
-      (id) => latestPreferences?.pets[id]?.includedInRandomCast ?? true,
-    );
-    citizens = applyActiveCast(citizens, activePetIds);
-    citizens = applyOrchestratorCitizen(citizens, orchestratorView);
-    render(true);
-  } catch {
-    // Invalid or unavailable user packs never prevent bundled pets from loading.
-  }
+function adoptReloadedPacks(reloaded: ReloadedPacks | null): void {
+  if (!reloaded) return;
+  citizens = reloaded.citizens;
+  orchestratorView = reloaded.view;
+  activePetIds = reloaded.activeIds;
+  streets.retain(citizens);
+  render(true);
 }
 
 async function start(): Promise<void> {
-  await installOnboardingPresence(village);
+  await streets.fetch();
+  await installOnboardingPresence(village, () => streets.isPrimary());
   await listen("user-packs-changed", () => {
-    void reloadUserPacks();
+    void reloadUserPacks(citizens, pendingOrchestratorView, latestPreferences).then(
+      adoptReloadedPacks,
+    );
   });
   await listen<OrchestratorView>("orchestrator-pet-state", (event) => {
     pendingOrchestratorView = event.payload;
     orchestratorView = validOrchestratorView(event.payload);
     citizens = applyOrchestratorCitizen(citizens, orchestratorView);
+    streets.retain(citizens);
     render(true);
   });
-  await reloadUserPacks();
+  await watchStreetChanges(streets, () => {
+    streets.retain(citizens);
+    render(true);
+  });
+  adoptReloadedPacks(await reloadUserPacks(citizens, pendingOrchestratorView, latestPreferences));
   try {
     pendingOrchestratorView = await invoke<OrchestratorView>("get_orchestrator_pet_state");
     orchestratorView = validOrchestratorView(pendingOrchestratorView);
@@ -171,6 +167,7 @@ async function start(): Promise<void> {
     orchestratorView = null;
   }
   citizens = applyOrchestratorCitizen(citizens, orchestratorView);
+  streets.retain(citizens);
   await installVillagePreferences(
     renderer,
     () => {
@@ -187,6 +184,7 @@ async function start(): Promise<void> {
         (id) => preferences.pets[id]?.includedInRandomCast ?? true,
       );
       citizens = applyActiveCast(citizens, activePetIds);
+      streets.retain(citizens);
       render(true);
     },
   );

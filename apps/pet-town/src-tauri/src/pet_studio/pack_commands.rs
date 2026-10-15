@@ -28,15 +28,15 @@ pub fn save_pet_pack(
     let snapshot = app
         .state::<crate::preferences::PreferencesStore>()
         .register_pet(id.clone(), assign_orchestrator);
-    let _ = app.emit_to("main", "preferences-applied", &snapshot);
+    let _ = crate::street_windows::emit_to_streets(app.clone(), "preferences-applied", &snapshot);
     let _ = app.emit("pet-studio-preferences", &snapshot);
     crate::orchestrator::commands::preferences_changed(&app, None);
-    let reload_warning = app
-        .emit_to("main", "user-packs-changed", ())
-        .err()
-        .map(|_| {
-            "The pet was saved, but the village could not reload it automatically.".to_string()
-        });
+    let reload_warning =
+        crate::street_windows::emit_to_streets(app.clone(), "user-packs-changed", ())
+            .err()
+            .map(|_| {
+                "The pet was saved, but the village could not reload it automatically.".to_string()
+            });
     Ok(ActivateExtensionResult { id, reload_warning })
 }
 
@@ -99,13 +99,13 @@ pub fn activate_pet_extension(
         .state::<crate::preferences::PreferencesStore>()
         .snapshot();
     let _ = app.emit("pet-studio-preferences", &snapshot);
-    let reload_warning = app
-        .emit_to("main", "user-packs-changed", ())
-        .err()
-        .map(|_| {
-            "The extension is active, but the village could not reload it automatically."
-                .to_string()
-        });
+    let reload_warning =
+        crate::street_windows::emit_to_streets(app.clone(), "user-packs-changed", ())
+            .err()
+            .map(|_| {
+                "The extension is active, but the village could not reload it automatically."
+                    .to_string()
+            });
     Ok(ActivateExtensionResult { id, reload_warning })
 }
 

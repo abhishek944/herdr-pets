@@ -40,6 +40,7 @@ mod preferences_validation;
 mod sessions;
 mod settings_window;
 mod settings_window_lifecycle;
+mod street_windows;
 mod town_commands;
 #[cfg(unix)]
 mod town_launch_cli;
@@ -117,8 +118,7 @@ pub fn run() {
         .on_window_event(app_events::window_event)
         .setup(|app| {
             app_menu::install(app)?;
-            window::create_village_window(app)?;
-            window::configure_window(app)?;
+            street_windows::reconcile_street_windows(app.handle())?;
             onboarding::window::start(app.handle());
             control::start(app.handle().clone());
             #[cfg(unix)]
@@ -129,6 +129,7 @@ pub fn run() {
             #[cfg(target_os = "macos")]
             global_mayor_shortcut::start();
             orchestrator::commands::preferences_changed(app.handle(), None);
+            street_windows::start_street_watcher(app.handle().clone());
             #[cfg(target_os = "macos")]
             window::start_hit_test_loop(app.handle().clone());
             Ok(())

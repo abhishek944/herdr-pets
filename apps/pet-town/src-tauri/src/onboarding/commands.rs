@@ -1,5 +1,5 @@
 use super::{model::Context, window, Onboarding};
-use tauri::{AppHandle, Emitter, Manager, State, WebviewWindow};
+use tauri::{AppHandle, Manager, State, WebviewWindow};
 
 #[tauri::command]
 pub(crate) fn get_onboarding_context(
@@ -68,10 +68,9 @@ pub(crate) fn set_onboarding_appearance(
     let mut snapshot = store.snapshot();
     snapshot.preferences.app.strip_theme = theme;
     let snapshot = store.apply(snapshot.preferences, snapshot.revision)?;
-    app.emit_to("main", "preferences-applied", &snapshot)
-        .map_err(|_| {
-            "The look was saved, but the desktop could not be refreshed. Reopen Pet Town.".into()
-        })
+    crate::street_windows::emit_to_streets(app.clone(), "preferences-applied", &snapshot).map_err(
+        |_| "The look was saved, but the desktop could not be refreshed. Reopen Pet Town.".into(),
+    )
 }
 
 #[tauri::command]

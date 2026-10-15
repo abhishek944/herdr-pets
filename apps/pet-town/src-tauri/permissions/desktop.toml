@@ -63,6 +63,7 @@ commands.allow = [
   "quit_pet_town",
   "set_hit_regions",
   "renderer_ready",
+  "street_assignment",
   "set_village_visible",
   "village_visible",
 ]

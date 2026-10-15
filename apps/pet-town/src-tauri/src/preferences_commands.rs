@@ -30,7 +30,7 @@ pub fn apply_preferences(
     draft.normalize_assistant();
     let previous = state.snapshot().preferences.app.orchestrator;
     let snapshot = state.apply(draft, expected_revision)?;
-    let _ = app.emit_to("main", "preferences-applied", &snapshot);
+    let _ = crate::street_windows::emit_to_streets(app.clone(), "preferences-applied", &snapshot);
     crate::orchestrator::commands::preferences_changed(&app, Some(&previous));
     Ok(snapshot)
 }
@@ -45,7 +45,11 @@ pub fn reload_and_emit(app: &AppHandle) -> Result<PreferencesSnapshot, String> {
     match app.state::<PreferencesStore>().reload() {
         Ok(snapshot) => {
             let _ = app.emit("preferences-reloaded", &snapshot);
-            let _ = app.emit_to("main", "preferences-applied", &snapshot);
+            let _ = crate::street_windows::emit_to_streets(
+                app.clone(),
+                "preferences-applied",
+                &snapshot,
+            );
             crate::orchestrator::commands::preferences_changed(app, Some(&previous));
             Ok(snapshot)
         }

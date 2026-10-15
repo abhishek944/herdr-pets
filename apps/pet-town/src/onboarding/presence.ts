@@ -1,9 +1,15 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-export async function installOnboardingPresence(root: HTMLElement): Promise<void> {
+export async function installOnboardingPresence(
+  root: HTMLElement,
+  isPrimaryStreet: () => boolean = () => true,
+): Promise<void> {
   let deadline = 0;
   let timer: number | null = null;
   const report = () => {
+    // Only the primary street reports presence; every street answers the
+    // request event, so unfiltered reporting would flap the shared state.
+    if (!isPrimaryStreet()) return;
     const ids = [...root.querySelectorAll<HTMLElement>(".citizen")]
       .filter((pet) => {
         const image = pet.querySelector<HTMLImageElement>("img.pet");

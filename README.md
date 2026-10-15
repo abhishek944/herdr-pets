@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/icon.png" alt="Pet Town icon" width="128" height="128" />
+</p>
+
 # Pet Town
 
 Pet Town turns live Herdr, Claude Code, Codex, OpenCode, Pi, Factory Droid,
@@ -18,6 +22,16 @@ characters are exported from the original Three.js town, retaining all 27,037
 source dry-land cells. The [Godot guide](apps/pet-town-godot-sample/README.md)
 describes native gameplay; the [Three.js guide](apps/pet-town-3d/README.md)
 retains browser instructions and source provenance.
+
+## Pet Town gameplay
+
+Silent clips recorded in an isolated Godot session. They demonstrate gameplay,
+not live agents or Mayor integration. Click a preview to watch the MP4.
+
+| Explore and pet wildlife                                                                | Travel between districts                                                              | Build, then undo                                                                             |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [![Explore and pet wildlife](assets/pet-town-explore.jpg)](assets/pet-town-explore.mp4) | [![Travel between districts](assets/pet-town-travel.jpg)](assets/pet-town-travel.mp4) | [![Build a lantern tower and undo it](assets/pet-town-build.jpg)](assets/pet-town-build.mp4) |
+| [Walk, pet, run and jump · 10s](assets/pet-town-explore.mp4)                            | [Picnic Garden and Shell Cove · 16s](assets/pet-town-travel.mp4)                      | [Four placements and four undos · 12s](assets/pet-town-build.mp4)                            |
 
 ## Install
 

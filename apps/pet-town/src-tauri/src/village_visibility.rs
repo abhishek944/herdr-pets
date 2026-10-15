@@ -1,10 +1,11 @@
 use serde::Serialize;
+use std::collections::HashSet;
 use std::sync::atomic::{AtomicBool, Ordering};
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Emitter, Manager, WebviewWindow};
 
 pub(crate) struct VillageVisibility {
     requested: AtomicBool,
-    ready: AtomicBool,
+    ready: std::sync::Mutex<HashSet<String>>,
     town_active: AtomicBool,
 }
 
@@ -12,7 +13,7 @@ impl Default for VillageVisibility {
     fn default() -> Self {
         Self {
             requested: AtomicBool::new(true),
-            ready: AtomicBool::new(false),
+            ready: std::sync::Mutex::new(HashSet::new()),
             town_active: AtomicBool::new(false),
         }
     }
@@ -25,20 +26,28 @@ struct VillageVisibilityChanged {
 }
 
 fn apply(app: &AppHandle, visible: bool) -> Result<(), String> {
-    let window = app
-        .get_webview_window("main")
-        .ok_or_else(|| "Pet Street window is unavailable".to_string())?;
-    if visible {
-        crate::window::show_window(&window)
-    } else {
-        window.hide().map_err(|error| error.to_string())
+    for window in crate::street_windows::street_windows(app) {
+        if visible {
+            crate::window::show_window(&window)?;
+        } else {
+            window.hide().map_err(|error| error.to_string())?;
+        }
     }
+    Ok(())
+}
+
+fn any_ready(state: &VillageVisibility) -> bool {
+    state
+        .ready
+        .lock()
+        .map(|ready| !ready.is_empty())
+        .unwrap_or(false)
 }
 
 pub(crate) fn set(app: &AppHandle, visible: bool) -> Result<bool, String> {
     let state = app.state::<VillageVisibility>();
     state.requested.store(visible, Ordering::SeqCst);
-    if state.ready.load(Ordering::SeqCst) {
+    if any_ready(&state) {
         apply(app, visible && !state.town_active.load(Ordering::SeqCst))?;
     }
     let _ = app.emit(
@@ -51,7 +60,7 @@ pub(crate) fn set(app: &AppHandle, visible: bool) -> Result<bool, String> {
 pub(crate) fn set_town_active(app: &AppHandle, active: bool) -> Result<(), String> {
     let state = app.state::<VillageVisibility>();
     state.town_active.store(active, Ordering::SeqCst);
-    if state.ready.load(Ordering::SeqCst) {
+    if any_ready(&state) {
         let visible = state.requested.load(Ordering::SeqCst) && !active;
         apply(app, visible)?;
     }
@@ -59,12 +68,16 @@ pub(crate) fn set_town_active(app: &AppHandle, active: bool) -> Result<(), Strin
 }
 
 #[tauri::command]
-pub(crate) fn renderer_ready(app: AppHandle) -> Result<bool, String> {
+pub(crate) fn renderer_ready(window: WebviewWindow, app: AppHandle) -> Result<bool, String> {
     let state = app.state::<VillageVisibility>();
-    state.ready.store(true, Ordering::SeqCst);
+    if let Ok(mut ready) = state.ready.lock() {
+        ready.insert(window.label().to_string());
+    }
     let visible =
         state.requested.load(Ordering::SeqCst) && !state.town_active.load(Ordering::SeqCst);
-    apply(&app, visible)?;
+    if visible {
+        crate::window::show_window(&window)?;
+    }
     Ok(visible)
 }
 

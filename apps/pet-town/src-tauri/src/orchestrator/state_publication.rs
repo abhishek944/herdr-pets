@@ -10,7 +10,7 @@ static MAYOR_PUBLICATION: Mutex<()> = Mutex::new(());
 pub fn publish(state: &OrchestratorState, app: &AppHandle) {
     let _ = app.emit("orchestrator-status-refresh", ());
     let pet = state.pet_state(app);
-    let _ = app.emit_to("main", "orchestrator-pet-state", pet);
+    let _ = crate::street_windows::emit_to_streets(app.clone(), "orchestrator-pet-state", pet);
     publish_mayor(state, app);
 }
 
@@ -108,7 +108,11 @@ impl OrchestratorState {
         runtime.mayor_speaking = speaking;
         drop(runtime);
         if changed {
-            let _ = app.emit_to("main", "orchestrator-pet-state", self.pet_state(app));
+            let _ = crate::street_windows::emit_to_streets(
+                app.clone(),
+                "orchestrator-pet-state",
+                self.pet_state(app),
+            );
         }
         publish_mayor(self, app);
     }

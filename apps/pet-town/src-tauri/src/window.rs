@@ -1,6 +1,7 @@
 use serde::Deserialize;
+use std::collections::HashMap;
 use std::time::Duration;
-use tauri::{Manager, PhysicalPosition, PhysicalSize, WebviewWindow};
+use tauri::{Manager, Monitor, WebviewWindow};
 
 #[cfg(target_os = "macos")]
 tauri_nspanel::tauri_panel! {
@@ -22,12 +23,16 @@ pub(crate) struct HitRegion {
 }
 
 #[derive(Default)]
-pub(crate) struct HitRegions(std::sync::Mutex<Vec<HitRegion>>);
+pub(crate) struct HitRegions(std::sync::Mutex<HashMap<String, Vec<HitRegion>>>);
 
 #[tauri::command]
-pub(crate) fn set_hit_regions(regions: Vec<HitRegion>, state: tauri::State<'_, HitRegions>) {
+pub(crate) fn set_hit_regions(
+    window: WebviewWindow,
+    regions: Vec<HitRegion>,
+    state: tauri::State<'_, HitRegions>,
+) {
     if let Ok(mut stored) = state.0.lock() {
-        *stored = regions;
+        stored.insert(window.label().to_string(), regions);
     }
 }
 
@@ -55,9 +60,6 @@ pub(crate) fn show_window(window: &WebviewWindow) -> Result<(), String> {
 fn refresh_mouse_passthrough(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     use objc2_app_kit::{NSEvent, NSWindow};
 
-    let window = app
-        .get_webview_window("main")
-        .ok_or("main village window is closed")?;
     let regions = app
         .state::<HitRegions>()
         .0
@@ -66,18 +68,25 @@ fn refresh_mouse_passthrough(app: &tauri::AppHandle) -> Result<(), Box<dyn std::
         .unwrap_or_default();
 
     unsafe {
-        let native_window: &NSWindow = &*window.ns_window()?.cast();
-        let frame = native_window.frame();
         let mouse = NSEvent::mouseLocation();
-        let local_x = mouse.x - frame.origin.x;
-        let local_y = frame.size.height - (mouse.y - frame.origin.y);
-        let over_citizen = regions.iter().any(|region| {
-            local_x >= region.x
-                && local_x <= region.x + region.width
-                && local_y >= region.y
-                && local_y <= region.y + region.height
-        });
-        native_window.setIgnoresMouseEvents(!over_citizen);
+        for window in crate::street_windows::street_windows(app) {
+            let native_window: &NSWindow = &*window.ns_window()?.cast();
+            let frame = native_window.frame();
+            let local_x = mouse.x - frame.origin.x;
+            let local_y = frame.size.height - (mouse.y - frame.origin.y);
+            let over_citizen = regions
+                .get(window.label())
+                .map(|list| list.as_slice())
+                .unwrap_or(&[])
+                .iter()
+                .any(|region| {
+                    local_x >= region.x
+                        && local_x <= region.x + region.width
+                        && local_y >= region.y
+                        && local_y <= region.y + region.height
+                });
+            native_window.setIgnoresMouseEvents(!over_citizen);
+        }
     }
     Ok(())
 }
@@ -98,38 +107,39 @@ pub(crate) fn start_hit_test_loop(app: tauri::AppHandle) {
     });
 }
 
-pub(crate) fn create_village_window(
-    app: &mut tauri::App,
-) -> Result<(), Box<dyn std::error::Error>> {
+pub(crate) fn create_street_window(
+    app: &tauri::AppHandle,
+    label: &str,
+) -> Result<WebviewWindow, Box<dyn std::error::Error>> {
     #[cfg(target_os = "macos")]
-    app.set_activation_policy(tauri::ActivationPolicy::Regular);
+    let _ = app.set_activation_policy(tauri::ActivationPolicy::Regular);
 
-    tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App("index.html".into()))
-        .title("Pet Street")
-        // Additional transparent height lets Ocean water sit below boat hulls.
-        // Standard pets retain their existing bottom-anchored on-screen position.
-        .inner_size(1100.0, 290.0)
-        .min_inner_size(320.0, 290.0)
-        .resizable(true)
-        .transparent(true)
-        .decorations(false)
-        .always_on_top(true)
-        .focusable(false)
-        .focused(false)
-        .accept_first_mouse(true)
-        .skip_taskbar(false)
-        .shadow(false)
-        .visible(false)
-        .visible_on_all_workspaces(true)
-        .build()?;
-    Ok(())
+    let window =
+        tauri::WebviewWindowBuilder::new(app, label, tauri::WebviewUrl::App("index.html".into()))
+            .title("Pet Street")
+            // Additional transparent height lets Ocean water sit below boat hulls.
+            // Standard pets retain their existing bottom-anchored on-screen position.
+            .inner_size(1100.0, 290.0)
+            .min_inner_size(320.0, 290.0)
+            .resizable(true)
+            .transparent(true)
+            .decorations(false)
+            .always_on_top(true)
+            .focusable(false)
+            .focused(false)
+            .accept_first_mouse(true)
+            .skip_taskbar(false)
+            .shadow(false)
+            .visible(false)
+            .visible_on_all_workspaces(true)
+            .build()?;
+    Ok(window)
 }
 
-pub(crate) fn configure_window(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
-    let window = app
-        .get_webview_window("main")
-        .ok_or("main village window was not created")?;
-
+pub(crate) fn configure_street_window(
+    window: &WebviewWindow,
+    monitor: &Monitor,
+) -> Result<(), Box<dyn std::error::Error>> {
     window.set_ignore_cursor_events(true)?;
 
     #[cfg(target_os = "macos")]
@@ -169,15 +179,8 @@ pub(crate) fn configure_window(app: &mut tauri::App) -> Result<(), Box<dyn std::
         native_window.setCollectionBehavior(behavior);
     }
 
-    if let Some(monitor) = window.current_monitor()? {
-        let area = monitor.work_area();
-        let window_height = window.outer_size()?.height;
-        window.set_size(PhysicalSize::new(area.size.width, window_height))?;
-        let x = area.position.x;
-        // Scenery must meet the work-area edge; pet clearance belongs to the renderer.
-        let y = area.position.y + area.size.height as i32 - window_height as i32;
-        window.set_position(PhysicalPosition::new(x, y))?;
-    }
+    crate::street_windows::place_street_window(window, monitor)
+        .map_err(|error| error.to_string())?;
 
     Ok(())
 }

@@ -81,6 +81,7 @@ pub(crate) fn handler() -> impl Fn(tauri::ipc::Invoke<tauri::Wry>) -> bool + Sen
         crate::town_terminal::town_terminal_close,
         crate::town_commands::quit_pet_town,
         crate::window::set_hit_regions,
+        crate::street_windows::street_assignment,
         crate::village_visibility::renderer_ready,
         crate::village_visibility::set_village_visible,
         crate::village_visibility::village_visible
